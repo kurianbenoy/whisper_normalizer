@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "whisper_normalizer"
+  site-url: "https://kurianbenoy.github.io/whisper_normalizer"
+  description: "A python package for whisper normalizer"
+  repo-branch: main
+  repo-url: "https://github.com/kurianbenoy/whisper_normalizer"
