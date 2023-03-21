@@ -29,6 +29,7 @@ ADDITIONAL_DIACRITICS = {
     "Ł": "L",
 }
 
+
 def remove_symbols_and_diacritics(s: str, keep=""):
     """
     Replace any other markers, symbols, and punctuations with a space,
@@ -56,7 +57,6 @@ def remove_symbols(s: str):
         " " if unicodedata.category(c)[0] in "MSP" else c
         for c in unicodedata.normalize("NFKC", s)
     )
-
 
 # %% ../nbs/00_basic.ipynb 4
 class BasicTextNormalizer:

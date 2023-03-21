@@ -9,6 +9,7 @@ import os
 import re
 from fractions import Fraction
 from typing import Iterator, List, Match, Optional, Union
+import urllib
 
 from more_itertools import windowed
 
@@ -452,7 +453,7 @@ class EnglishNumberNormalizer:
 
         return s
 
-
+# %% ../nbs/01_english.ipynb 4
 class EnglishSpellingNormalizer:
     """
     Applies British-American spelling mappings as listed in [1].
@@ -461,15 +462,15 @@ class EnglishSpellingNormalizer:
     """
 
     def __init__(self):
-        mapping_path = os.path.join(os.path.dirname(__file__), "english.json")
-        self.mapping = json.load(open(mapping_path))
+        response = urllib.request.urlopen(
+            "https://gist.githubusercontent.com/kurianbenoy/715c4528be9859ff64338f69416795c7/raw/936c565f059b81d007e2c52beb733b3a01937d90/openai_whisper.json"
+        )
+        self.mapping = json.loads(response.read())
 
     def __call__(self, s: str):
         return " ".join(self.mapping.get(word, word) for word in s.split())
 
-
-
-# %% ../nbs/01_english.ipynb 4
+# %% ../nbs/01_english.ipynb 6
 class EnglishTextNormalizer:
     def __init__(self):
         self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"
@@ -556,4 +557,3 @@ class EnglishTextNormalizer:
         s = re.sub(r"\s+", " ", s)  # replace any successive whitespaces with a space
 
         return s
-
