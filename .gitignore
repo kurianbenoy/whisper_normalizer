@@ -8,6 +8,7 @@ conda/
 _site/
 _docs/
 test_settings.ini
+token
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
