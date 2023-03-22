@@ -15,7 +15,7 @@ or from github repository
 pip install git+https://github.com/kurianbenoy/whisper_normalizer.git
 ```
 
-## Why should normalize/standardize text?
+## Why should we normalize/standardize text?
 
 - In ASR systems it’s important to normalize the text to reduce error in
   metrics like WER, CER etc.
