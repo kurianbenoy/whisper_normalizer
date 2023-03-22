@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['EnglishNumberNormalizer', 'EnglishSpellingNormalizer', 'EnglishTextNormalizer']
 
-# %% ../nbs/01_english.ipynb 3
+# %% ../nbs/01_english.ipynb 4
 import json
 import os
 import re
@@ -453,7 +453,7 @@ class EnglishNumberNormalizer:
 
         return s
 
-# %% ../nbs/01_english.ipynb 4
+# %% ../nbs/01_english.ipynb 5
 class EnglishSpellingNormalizer:
     """
     Applies British-American spelling mappings as listed in [1].
@@ -470,8 +470,10 @@ class EnglishSpellingNormalizer:
     def __call__(self, s: str):
         return " ".join(self.mapping.get(word, word) for word in s.split())
 
-# %% ../nbs/01_english.ipynb 6
+# %% ../nbs/01_english.ipynb 7
 class EnglishTextNormalizer:
+    """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper."""
+
     def __init__(self):
         self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"
         self.replacers = {

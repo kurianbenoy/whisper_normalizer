@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['ADDITIONAL_DIACRITICS', 'remove_symbols_and_diacritics', 'remove_symbols', 'BasicTextNormalizer']
 
-# %% ../nbs/00_basic.ipynb 3
+# %% ../nbs/00_basic.ipynb 4
 import re
 import unicodedata
 
@@ -58,7 +58,7 @@ def remove_symbols(s: str):
         for c in unicodedata.normalize("NFKC", s)
     )
 
-# %% ../nbs/00_basic.ipynb 4
+# %% ../nbs/00_basic.ipynb 5
 class BasicTextNormalizer:
     def __init__(self, remove_diacritics: bool = False, split_letters: bool = False):
         self.clean = (
