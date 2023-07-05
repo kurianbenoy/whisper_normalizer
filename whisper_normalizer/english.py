@@ -10,6 +10,7 @@ import re
 from fractions import Fraction
 from typing import Iterator, List, Match, Optional, Union
 import urllib
+import urllib.request
 
 from more_itertools import windowed
 
