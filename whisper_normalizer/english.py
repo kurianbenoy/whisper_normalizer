@@ -447,9 +447,13 @@ class EnglishNumberNormalizer:
         return s
 
     def __call__(self, s: str):
+        #if word ends with a punctuation, add a space before it
+        s = re.sub(r"([a-z])([.,;:!?])", r"\1 \2", s)
         s = self.preprocess(s)
         s = " ".join(word for word in self.process_words(s.split()) if word is not None)
         s = self.postprocess(s)
+        #remove whitespace between numbers and punctuation
+        s = re.sub(r"([0-9])\s([.,;:!?])", r"\1\2", s)
 
         return s
 
