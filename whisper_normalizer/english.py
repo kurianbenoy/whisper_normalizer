@@ -452,8 +452,8 @@ class EnglishNumberNormalizer:
         s = self.preprocess(s)
         s = " ".join(word for word in self.process_words(s.split()) if word is not None)
         s = self.postprocess(s)
-        #remove whitespace between numbers and punctuation
-        s = re.sub(r"([0-9])\s([.,;:!?])", r"\1\2", s)
+        #remove whitespace between numbers or letters and punctuation
+        s = re.sub(r"([0-9a-z])\s+([.,;:!?])", r"\1\2", s)
 
         return s
 
