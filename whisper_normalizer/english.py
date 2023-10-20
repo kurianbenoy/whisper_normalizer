@@ -9,7 +9,7 @@ import os
 import re
 from fractions import Fraction
 from typing import Iterator, List, Match, Optional, Union
-import urllib
+import urllib.request
 
 from more_itertools import windowed
 
@@ -534,8 +534,9 @@ class EnglishTextNormalizer:
         self.standardize_numbers = EnglishNumberNormalizer()
         self.standardize_spellings = EnglishSpellingNormalizer()
 
-    def __call__(self, s: str):
-        s = s.lower()
+    def __call__(self, s: str, lowercase = True, remove_punctuation = True):
+        if lowercase:
+            s = s.lower()
 
         s = re.sub(r"[<\[][^>\]]*[>\]]", "", s)  # remove words between brackets
         s = re.sub(r"\(([^)]+?)\)", "", s)  # remove words between parenthesis
@@ -547,7 +548,10 @@ class EnglishTextNormalizer:
 
         s = re.sub(r"(\d),(\d)", r"\1\2", s)  # remove commas between digits
         s = re.sub(r"\.([^0-9]|$)", r" \1", s)  # remove periods not followed by numbers
-        s = remove_symbols_and_diacritics(s, keep=".%$¢€£")  # keep numeric symbols
+        symbols_to_keep = ".%$¢€£"
+        if not remove_punctuation:
+            symbols_to_keep += ".,;:!?"
+        s = remove_symbols_and_diacritics(s, keep=symbols_to_keep)  # keep numeric symbols
 
         s = self.standardize_numbers(s)
         s = self.standardize_spellings(s)
