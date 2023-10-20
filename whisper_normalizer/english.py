@@ -189,7 +189,7 @@ class EnglishNumberNormalizer:
             prefix = None
             return result
 
-        if len(words) == 0:
+        if not words:
             return
 
         for prev, current, next in windowed([None] + words + [None], 3):
@@ -213,10 +213,7 @@ class EnglishNumberNormalizer:
                         yield output(value)
 
                 prefix = current[0] if has_prefix else prefix
-                if f.denominator == 1:
-                    value = f.numerator  # store integers as int
-                else:
-                    value = current_without_prefix
+                value = f.numerator if f.denominator == 1 else current_without_prefix
             elif current not in self.words:
                 # non-numeric words
                 if value is not None:
@@ -369,7 +366,7 @@ class EnglishNumberNormalizer:
                         if value is not None:
                             yield output(value)
                         yield output(current)
-                elif current == "double" or current == "triple":
+                elif current in ["double", "triple"]:
                     if next in self.ones or next in self.zeros:
                         repeats = 2 if current == "double" else 3
                         ones = self.ones.get(next, 0)
@@ -400,10 +397,8 @@ class EnglishNumberNormalizer:
         for i, segment in enumerate(segments):
             if len(segment.strip()) == 0:
                 continue
-            if i == len(segments) - 1:
-                results.append(segment)
-            else:
-                results.append(segment)
+            results.append(segment)
+            if i != len(segments) - 1:
                 last_word = segment.rsplit(maxsplit=2)[-1]
                 if last_word in self.decimals or last_word in self.multipliers:
                     results.append("point five")
