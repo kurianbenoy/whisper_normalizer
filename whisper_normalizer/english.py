@@ -9,7 +9,10 @@ import os
 import re
 from fractions import Fraction
 from typing import Iterator, List, Match, Optional, Union
+
+# Fixing Import error raised in issue #3
 import urllib
+import urllib.request
 
 from more_itertools import windowed
 
@@ -463,7 +466,7 @@ class EnglishSpellingNormalizer:
 
     def __init__(self):
         response = urllib.request.urlopen(
-            "https://gist.githubusercontent.com/kurianbenoy/715c4528be9859ff64338f69416795c7/raw/936c565f059b81d007e2c52beb733b3a01937d90/openai_whisper.json"
+            "https://raw.githubusercontent.com/openai/whisper/main/whisper/normalizers/english.json"
         )
         self.mapping = json.loads(response.read())
 
@@ -472,7 +475,23 @@ class EnglishSpellingNormalizer:
 
 # %% ../nbs/01_english.ipynb 7
 class EnglishTextNormalizer:
-    """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper."""
+    """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper. As per the text normalization/standardization approach  Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `EnglishTextNormalizer` does the following functionality:
+
+    1. Remove any phrases between matching brackets ([, ]).
+    2. Remove any phrases between matching parentheses ((, )).
+    3. Remove any of the following words: hmm, mm, mhm, mmm, uh, um
+    4. Remove whitespace characters that comes before an apostrophe ’
+    5. Convert standard or informal contracted forms of English into the original form.
+    6. Remove commas (,) between digits
+    7. Remove periods (.) not followed by numbers
+    8. Remove symbols as well as diacritics from the text, where symbols are the characters with the Unicode category
+    starting with M, S, or P, except period, percent, and currency symbols that may be detected in the next step.
+    9. Detect any numeric expressions of numbers and currencies and replace with a form using Arabic numbers, e.g. “Ten
+    thousand dollars” → “$10000”.
+    10. Convert British spellings into American spellings.
+    11. Remove remaining symbols that are not part of any numeric expressions.
+    12. Replace any successive whitespace characters with a space.
+    """
 
     def __init__(self):
         self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"

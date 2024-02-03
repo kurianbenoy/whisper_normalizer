@@ -60,6 +60,18 @@ def remove_symbols(s: str):
 
 # %% ../nbs/00_basic.ipynb 5
 class BasicTextNormalizer:
+    """As per the text normalization/standardization approach mentioned in  Appendix Section C pp.21 in  the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `BasicTextNormalizer` does the following functionality:
+
+    1. Remove any phrases between matching brackets ([, ]).
+    2. Remove any phrases between matching parentheses ((, )).
+    3. Replace any markers, symbols, and punctuation characters with a space, i.e. when the Unicode category of each
+    character in the NFKC-normalized string starts with M, S, or P.
+    4. make the text lowercase.
+    5. replace any successive whitespace characters with a space
+
+    Note: It's not recommended to use this function for non-english languages because it removes vowels in languages like Malayalam which was identified by [kavya in this tweet](https://twitter.com/kavya_manohar/status/1752574864618365059).
+    """
+
     def __init__(self, remove_diacritics: bool = False, split_letters: bool = False):
         self.clean = (
             remove_symbols_and_diacritics if remove_diacritics else remove_symbols
