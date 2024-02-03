@@ -40,4 +40,7 @@ d = { 'settings': { 'branch': 'main',
                                                                                                            'whisper_normalizer/english.py'),
                                             'whisper_normalizer.english.EnglishTextNormalizer.__init__': ( 'english.html#englishtextnormalizer.__init__',
                                                                                                            'whisper_normalizer/english.py')},
-            'whisper_normalizer.malayalam': {}}}
+            'whisper_normalizer.malayalam': { 'whisper_normalizer.malayalam.MalayalamTextNormalizer': ( 'malayalam.html#malayalamtextnormalizer',
+                                                                                                        'whisper_normalizer/malayalam.py'),
+                                              'whisper_normalizer.malayalam.MalayalamTextNormalizer.__call__': ( 'malayalam.html#malayalamtextnormalizer.__call__',
+                                                                                                                 'whisper_normalizer/malayalam.py')}}}
