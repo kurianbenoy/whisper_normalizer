@@ -4,6 +4,9 @@
 
 ## 0.0.5
 
+- Add Indic languages normalizer
+- Give credits to original repository
+- Improved docs
 
 
 
