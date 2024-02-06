@@ -15,11 +15,6 @@ class MalayalamTextNormalizer:
 
     So this is an attempt to build text normalizer for malayalam"""
 
-    # self.clean = (
-    #     remove_symbols_and_diacritics if remove_diacritics else remove_symbols
-    # )
-    # self.split_letters = split_letters
-
     def __call__(self, s: str):
         s = s.lower()
         s = re.sub(r"[<\[][^>\]]*[>\]]", "", s)  # remove words between brackets
@@ -29,9 +24,6 @@ class MalayalamTextNormalizer:
         s = re.sub("[a-zA-Z0-9]", "", s)
         # remove punctuation characters
         s = re.sub("[-,.:]", "", s)
-
-        # if self.split_letters:
-        #     s = " ".join(regex.findall(r"\X", s, regex.U))
 
         s = re.sub(
             r"\s+", " ", s
