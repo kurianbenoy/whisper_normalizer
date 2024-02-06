@@ -4,6 +4,7 @@
 __all__ = ['EnglishNumberNormalizer', 'EnglishSpellingNormalizer', 'EnglishTextNormalizer']
 
 # %% ../nbs/01_english.ipynb 4
+# This code is from OpenAI Whisper Repository: https://github.com/openai/whisper/tree/main/whisper/normalizers
 import json
 import os
 import re
