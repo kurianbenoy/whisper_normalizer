@@ -2,8 +2,8 @@
 
 # %% auto 0
 __all__ = ['NormalizerI', 'BaseNormalizer', 'DevanagariNormalizer', 'GurmukhiNormalizer', 'GujaratiNormalizer', 'OriyaNormalizer',
-           'BengaliNormalizer', 'TamilNormalizer', 'TeluguNormalizer', 'KannadaNormalizer', 'MalayalamNormalizer',
-           'UrduNormalizer', 'IndicNormalizerFactory']
+           'BengaliNormalizer', 'TamilNormalizer', 'TeluguNormalizer', 'KannadaNormalizer', 'UrduNormalizer',
+           'IndicNormalizerFactory', 'MalayalamNormalizer']
 
 # %% ../nbs/1B.indic_normalizer.ipynb 3
 import sys
@@ -866,91 +866,6 @@ class KannadaNormalizer(BaseNormalizer):
         return text
 
 
-class MalayalamNormalizer(BaseNormalizer):
-    """
-    Normalizer for the Malayalam script. In addition to basic normalization by the super class,
-    * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama
-    * canonicalize two-part dependent vowel signs
-    * Change from old encoding of chillus (till Unicode 5.0) to new encoding
-    * replace colon ':' by visarga if the colon follows a charcter in this script
-    """
-
-    CHILLU_CHAR_MAP = {
-        "\u0d7a": "\u0d23",
-        "\u0d7b": "\u0d28",
-        "\u0d7c": "\u0d30",
-        "\u0d7d": "\u0d32",
-        "\u0d7e": "\u0d33",
-        "\u0d7f": "\u0d15",
-    }
-
-    def _canonicalize_chillus(self, text):
-        for chillu, char in MalayalamNormalizer.CHILLU_CHAR_MAP.items():
-            text = text.replace(chillu, "{}\u0d4d".format(char))
-        return text
-
-    def _correct_geminated_T(self, text):
-        return text.replace("\u0d31\u0d4d\u0d31", "\u0d1f\u0d4d\u0d1f")
-
-    def __init__(
-        self,
-        lang="ml",
-        remove_nuktas=False,
-        nasals_mode="do_nothing",
-        do_normalize_chandras=False,
-        do_normalize_vowel_ending=False,
-        do_canonicalize_chillus=False,
-        do_correct_geminated_T=False,
-    ):
-        super(MalayalamNormalizer, self).__init__(
-            lang,
-            remove_nuktas,
-            nasals_mode,
-            do_normalize_chandras,
-            do_normalize_vowel_ending,
-        )
-        self.do_canonicalize_chillus = do_canonicalize_chillus
-        self.do_correct_geminated_T = do_correct_geminated_T
-
-    def normalize(self, text):
-        # Change from old encoding of chillus (till Unicode 5.0) to new encoding
-        text = text.replace("\u0d23\u0d4d\u200d", "\u0d7a")
-        text = text.replace("\u0d28\u0d4d\u200d", "\u0d7b")
-        text = text.replace("\u0d30\u0d4d\u200d", "\u0d7c")
-        text = text.replace("\u0d32\u0d4d\u200d", "\u0d7d")
-        text = text.replace("\u0d33\u0d4d\u200d", "\u0d7e")
-        text = text.replace("\u0d15\u0d4d\u200d", "\u0d7f")
-
-        # Normalize chillus
-        if self.do_canonicalize_chillus:
-            text = self._canonicalize_chillus(text)
-
-        # common normalization for Indic scripts
-        text = super(MalayalamNormalizer, self).normalize(text)
-
-        # replace the poorna virama codes specific to script
-        # with generic Indic script codes
-        text = text.replace("\u0d64", "\u0964")
-        text = text.replace("\u0d65", "\u0965")
-
-        # dependent vowels
-        text = text.replace("\u0d46\u0d3e", "\u0d4a")
-        text = text.replace("\u0d47\u0d3e", "\u0d4b")
-
-        # au forms
-        text = text.replace("\u0d46\u0d57", "\u0d4c")
-        text = text.replace("\u0d57", "\u0d4c")
-
-        # correct geminated T
-        if self.do_correct_geminated_T:
-            text = self._correct_geminated_T(text)
-
-        # correct visarga
-        text = re.sub(r"([\u0d00-\u0d7f]):", "\\1\u0d03", text)
-
-        return text
-
-
 class UrduNormalizer(NormalizerI):
     """Uses UrduHack library.
     https://docs.urduhack.com/en/stable/_modules/urduhack/normalization/character.html#normalize
@@ -1059,3 +974,88 @@ class IndicNormalizerFactory(object):
             return True
         else:
             return False
+
+# %% ../nbs/1B.indic_normalizer.ipynb 5
+class MalayalamNormalizer(BaseNormalizer):
+    """
+    Normalizer for the Malayalam script. In addition to basic normalization by the super class,
+    * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama
+    * canonicalize two-part dependent vowel signs
+    * Change from old encoding of chillus (till Unicode 5.0) to new encoding
+    * replace colon ':' by visarga if the colon follows a charcter in this script
+    """
+
+    CHILLU_CHAR_MAP = {
+        "\u0d7a": "\u0d23",
+        "\u0d7b": "\u0d28",
+        "\u0d7c": "\u0d30",
+        "\u0d7d": "\u0d32",
+        "\u0d7e": "\u0d33",
+        "\u0d7f": "\u0d15",
+    }
+
+    def _canonicalize_chillus(self, text):
+        for chillu, char in MalayalamNormalizer.CHILLU_CHAR_MAP.items():
+            text = text.replace(chillu, "{}\u0d4d".format(char))
+        return text
+
+    def _correct_geminated_T(self, text):
+        return text.replace("\u0d31\u0d4d\u0d31", "\u0d1f\u0d4d\u0d1f")
+
+    def __init__(
+        self,
+        lang="ml",
+        remove_nuktas=False,
+        nasals_mode="do_nothing",
+        do_normalize_chandras=False,
+        do_normalize_vowel_ending=False,
+        do_canonicalize_chillus=False,
+        do_correct_geminated_T=False,
+    ):
+        super(MalayalamNormalizer, self).__init__(
+            lang,
+            remove_nuktas,
+            nasals_mode,
+            do_normalize_chandras,
+            do_normalize_vowel_ending,
+        )
+        self.do_canonicalize_chillus = do_canonicalize_chillus
+        self.do_correct_geminated_T = do_correct_geminated_T
+
+    def __call__(self, text: str):
+        # Change from old encoding of chillus (till Unicode 5.0) to new encoding
+        text = text.replace("\u0d23\u0d4d\u200d", "\u0d7a")
+        text = text.replace("\u0d28\u0d4d\u200d", "\u0d7b")
+        text = text.replace("\u0d30\u0d4d\u200d", "\u0d7c")
+        text = text.replace("\u0d32\u0d4d\u200d", "\u0d7d")
+        text = text.replace("\u0d33\u0d4d\u200d", "\u0d7e")
+        text = text.replace("\u0d15\u0d4d\u200d", "\u0d7f")
+
+        # Normalize chillus
+        if self.do_canonicalize_chillus:
+            text = self._canonicalize_chillus(text)
+
+        # common normalization for Indic scripts
+        text = super(MalayalamNormalizer, self).normalize(text)
+
+        # replace the poorna virama codes specific to script
+        # with generic Indic script codes
+        text = text.replace("\u0d64", "\u0964")
+        text = text.replace("\u0d65", "\u0965")
+
+        # dependent vowels
+        text = text.replace("\u0d46\u0d3e", "\u0d4a")
+        text = text.replace("\u0d47\u0d3e", "\u0d4b")
+
+        # au forms
+        text = text.replace("\u0d46\u0d57", "\u0d4c")
+        text = text.replace("\u0d57", "\u0d4c")
+
+        # correct geminated T
+        if self.do_correct_geminated_T:
+            text = self._correct_geminated_T(text)
+
+        # correct visarga
+        text = re.sub(r"([\u0d00-\u0d7f]):", "\\1\u0d03", text)
+
+        return text
