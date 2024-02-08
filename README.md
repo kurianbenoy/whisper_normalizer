@@ -75,9 +75,7 @@ well. The logic for normalization in Indic languages is derived from
 
 ``` python
 from whisper_normalizer.indic_normalizer import MalayalamNormalizer
-```
 
-``` python
 normalizer = MalayalamNormalizer()
 normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.")
 ```
