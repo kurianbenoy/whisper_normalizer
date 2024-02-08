@@ -2,11 +2,12 @@
 
 <!-- do not remove -->
 
-## 0.0.5
+## 0.0.6
 
-- Add Indic languages normalizer
+- Add Indic languages normalizer, thanks to indic-nlp-library
 - Give credits to original repository
 - Improved docs
+- Found bug in BasicText normalizer
 
 
 
