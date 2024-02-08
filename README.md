@@ -68,3 +68,18 @@ english_normalizer("I'm a little teapot, short and stout. Tip me over and pour m
 ```
 
     'i am a little teapot short and stout tip me over and pour me out'
+
+This model extends Whisper_normalizer to support indic languages as
+well. The logic for normalization in Indic languages is derived from
+[indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library).
+
+``` python
+from whisper_normalizer.indic_normalizer import MalayalamNormalizer
+```
+
+``` python
+normalizer = MalayalamNormalizer()
+normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.")
+```
+
+    'എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.'
