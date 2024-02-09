@@ -16,7 +16,7 @@ pip install git+https://github.com/kurianbenoy/whisper_normalizer.git
 
 ## Why should we normalize/standardize text?
 
-- In ASR systems it’s important to normalize the text to reduce error in
+- In ASR systems it’s important to normalize the text to reduce unintentional penalties in
   metrics like WER, CER etc.
 - Text normalization/standardization is process of converting texts in
   different styles into a standardized form, which is a best-effort
@@ -71,13 +71,13 @@ english_normalizer("I'm a little teapot, short and stout. Tip me over and pour m
 
 This model extends Whisper_normalizer to support indic languages as
 well. The logic for normalization in Indic languages is derived from
-[indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library).
+[indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library). The logic for Malayalam normalization is expanded beyond the Indic NLP library.
 
 ``` python
 from whisper_normalizer.indic_normalizer import MalayalamNormalizer
 
 normalizer = MalayalamNormalizer()
-normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.")
+normalizer("എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.")
 ```
 
-    'എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.'
+    'എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.'
