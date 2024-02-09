@@ -2,7 +2,7 @@ import csv
 import unittest
 import sys
 import os
-from indic_normalizer import MalayalamNormalizer
+from whisper_normalizer.indic_normalizer import MalayalamNormalizer
 
 normalizer = MalayalamNormalizer()
 
