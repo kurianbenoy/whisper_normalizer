@@ -12,7 +12,7 @@ import string
 import itertools
 import re
 
-from . import langinfo
+import langinfo
 
 # %% ../nbs/1B.indic_normalizer.ipynb 4
 #  Copyright (c) 2013-present, Anoop Kunchukuttan
