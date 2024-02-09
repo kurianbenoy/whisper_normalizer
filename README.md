@@ -77,7 +77,7 @@ The logic for normalization in Indic languages is derived from [indic-nlp-librar
 from whisper_normalizer.indic_normalizer import MalayalamNormalizer
 
 normalizer = MalayalamNormalizer()
-normalizer("എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.")
+normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.")
 ```
 
     'എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.'
@@ -88,17 +88,12 @@ normalizer("എന്റെ കമ്പ്യൂട്ടറിന് എന്
 python ml_test.py
 ```
 
-
     Passes: 6
-    Failures: 3
+    Failures: 2
     Input: എൻറെ
     Expected Output: എന്റെ
     Actual Output: എൻറെ
 
-    Input: എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.
-    Expected Output: എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.
-    Actual Output: എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.
-    
     Input: കാൺമാനില്ല
     Expected Output: കാണ്മാനില്ല
     Actual Output: കാൺമാനില്ല
