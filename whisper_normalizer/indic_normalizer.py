@@ -1058,7 +1058,4 @@ class MalayalamNormalizer(BaseNormalizer):
         # correct visarga
         text = re.sub(r"([\u0d00-\u0d7f]):", "\\1\u0d03", text)
 
-        # remove samvruthokaram
-        text = text.replace("\u0d41\u0d4d", "\u0d4d")
-
         return text
