@@ -2,6 +2,12 @@
 
 <!-- do not remove -->
 
+## 0.0.8
+
+- Closes #10
+- Include Kayva's PR
+
+
 ## 0.0.7
 
 Closes #8
