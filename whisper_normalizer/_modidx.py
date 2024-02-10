@@ -245,8 +245,4 @@ d = { 'settings': { 'branch': 'main',
                                              'whisper_normalizer.langinfo.is_vowel_sign_offset': ( '1a.langinfo.html#is_vowel_sign_offset',
                                                                                                    'whisper_normalizer/langinfo.py'),
                                              'whisper_normalizer.langinfo.offset_to_char': ( '1a.langinfo.html#offset_to_char',
-                                                                                             'whisper_normalizer/langinfo.py')},
-            'whisper_normalizer.malayalam': { 'whisper_normalizer.malayalam.MalayalamTextNormalizer': ( 'malayalam.html#malayalamtextnormalizer',
-                                                                                                        'whisper_normalizer/malayalam.py'),
-                                              'whisper_normalizer.malayalam.MalayalamTextNormalizer.__call__': ( 'malayalam.html#malayalamtextnormalizer.__call__',
-                                                                                                                 'whisper_normalizer/malayalam.py')}}}
+                                                                                             'whisper_normalizer/langinfo.py')}}}
