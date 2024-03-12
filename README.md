@@ -18,7 +18,7 @@ license](https://img.shields.io/github/license/kurianbenoy/whisper_normalizer.sv
 Stars](https://img.shields.io/github/stars/kurianbenoy/whisper_normalizer.svg?colorA=orange&colorB=orange&logo=github)](https://github.com/kurianbenoy/whisper_normalizer/stargazers)
 [![PyPI
 version](https://img.shields.io/pypi/v/whisper-normalizer.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/whisper-normalizer/)
-[![Downloads](https://pepy.tech/badge/whisper-normalizer.png)](https://github.com/kurianbenoy/whisper_normalizer)
+[![Downloads](https://static.pepy.tech/badge/whisper-normalizer.png)](https://github.com/kurianbenoy/whisper_normalizer)
 <!-- [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/kurianbenoy/whisper_normalizer)
 [![python version](https://img.shields.io/badge/Python-<3.12-blue)](https://github.com/kurianbenoy/whisper_normalizer) -->
 
