@@ -89,6 +89,7 @@ class BaseNormalizer(NormalizerI):
         do_normalize_chandras=False,
         do_normalize_vowel_ending=False,
     ):
+
         self.lang = lang
         self.remove_nuktas = remove_nuktas
         self.nasals_mode = nasals_mode
@@ -101,6 +102,7 @@ class BaseNormalizer(NormalizerI):
         # self._init_visarga_correction()
 
     def _init_normalize_vowel_ending(self):
+
         if self.lang in langinfo.IE_LANGUAGES:
             self.fn_vowel_ending = self._normalize_word_vowel_ending_ie
         elif self.lang in langinfo.DRAVIDIAN_LANGUAGES:
@@ -109,6 +111,7 @@ class BaseNormalizer(NormalizerI):
             self.fn_vowel_ending = lambda x: x
 
     def _init_normalize_chandras(self):
+
         substitution_offsets = [
             [0x0D, 0x0F],  # chandra e, independent
             [0x11, 0x13],  # chandra o, independent
@@ -169,6 +172,7 @@ class BaseNormalizer(NormalizerI):
         self.pats_repls = (pats, repl_string)
 
     def _to_anusvaara_strict(self, text):
+
         pats, repl_string = self.pats_repls
         for pat in pats:
             text = pat.sub(repl_string, text)
@@ -243,12 +247,14 @@ class BaseNormalizer(NormalizerI):
         self.pats_repls = list(zip(pats, repl_strings))
 
     def _to_nasal_consonants(self, text):
+
         for pat, repl in self.pats_repls:
             text = pat.sub(repl, text)
 
         return text
 
     def _init_normalize_nasals(self):
+
         if self.nasals_mode == "to_anusvaara_strict":
             self._init_to_anusvaara_strict()
         elif self.nasals_mode == "to_anusvaara_relaxed":
@@ -366,6 +372,7 @@ class DevanagariNormalizer(BaseNormalizer):
         )
 
     def normalize(self, text):
+
         # common normalization for Indic scripts
         text = super(DevanagariNormalizer, self).normalize(text)
 
@@ -495,6 +502,7 @@ class GurmukhiNormalizer(BaseNormalizer):
         return text
 
     def normalize(self, text):
+
         # Addak
         if self.do_canonicalize_addak:
             ## replace addak+consonant with consonat+halant+consonant
@@ -561,6 +569,7 @@ class TeluguNormalizer(BaseNormalizer):
         )
 
     def normalize(self, text):
+
         # common normalization for Indic scripts
         text = super(TeluguNormalizer, self).normalize(text)
 
@@ -607,6 +616,7 @@ class GujaratiNormalizer(BaseNormalizer):
         )
 
     def __call__(self, text: str):
+
         # common normalization for Indic scripts
         text = super(GujaratiNormalizer, self).normalize(text)
 
@@ -664,6 +674,7 @@ class OriyaNormalizer(BaseNormalizer):
         self.do_remap_wa = do_remap_wa
 
     def __call__(self, text: str):
+
         # common normalization for Indic scripts
         text = super(OriyaNormalizer, self).normalize(text)
 
@@ -742,6 +753,7 @@ class BengaliNormalizer(BaseNormalizer):
         self.do_remap_assamese_chars = do_remap_assamese_chars
 
     def __call__(self, text: str):
+
         # common normalization for Indic scripts
         text = super(BengaliNormalizer, self).normalize(text)
 
@@ -802,6 +814,7 @@ class TamilNormalizer(BaseNormalizer):
         )
 
     def __call__(self, text: str):
+
         # common normalization for Indic scripts
         text = super(TamilNormalizer, self).normalize(text)
 
@@ -892,6 +905,7 @@ class KannadaNormalizer(BaseNormalizer):
         )
 
     def __call__(self, text: str):
+
         # common normalization for Indic scripts
         text = super(KannadaNormalizer, self).normalize(text)
 
