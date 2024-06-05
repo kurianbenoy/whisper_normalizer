@@ -4,3 +4,5 @@ website:
       - index.ipynb
       - 00_basic.ipynb
       - 01_english.ipynb
+      - 1a.langinfo.ipynb
+      - 1b.indic_normalizer.ipynb
