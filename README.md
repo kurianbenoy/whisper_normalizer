@@ -43,6 +43,20 @@ or from github repository
 pip install git+https://github.com/kurianbenoy/whisper_normalizer.git
 ```
 
+## How to use the package
+
+- I made a video walk through on how to use the `whisper_normalizer`
+  python package.
+
+[Colab Notebook
+Link](https://colab.research.google.com/gist/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506/hello-world_whisper_normalizer.ipynb)
+
+[Github Gist
+Link](https://gist.github.com/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506)
+
+[![Hello world to
+whisper_normalizer](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
+
 ## Why should we normalize/standardize text?
 
 - In ASR systems it’s important to normalize the text to reduce
@@ -67,6 +81,7 @@ model](https://www.assemblyai.com/blog/conformer-1/).
 
 ## Models evaluated using Whisper normalization
 
+- OpenAI Whisper
 - Massively Multilingual Speech (MMS) models by Meta
 - Conformer 1 by AssemblyAI
 - Conformer 2 by AssemblyAI
