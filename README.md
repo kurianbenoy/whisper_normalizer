@@ -48,11 +48,11 @@ pip install git+https://github.com/kurianbenoy/whisper_normalizer.git
 - I made a video walk through on how to use the `whisper_normalizer`
   python package.
 
-[Colab Notebook
-Link](https://colab.research.google.com/gist/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506/hello-world_whisper_normalizer.ipynb)
+[Colab Notebook Link of walk
+through](https://colab.research.google.com/gist/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506/hello-world_whisper_normalizer.ipynb)
 
-[Github Gist
-Link](https://gist.github.com/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506)
+[Github Gist Link of walk
+through](https://gist.github.com/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506)
 
 [![Hello world to
 whisper_normalizer](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
@@ -101,15 +101,6 @@ and
 You can use the same thing in this package as follows:
 
 ``` python
-from whisper_normalizer.basic import BasicTextNormalizer
-
-normalizer = BasicTextNormalizer()
-normalizer("I'm a little teapot, short and stout. Tip me over and pour me out!")
-```
-
-    'i m a little teapot short and stout tip me over and pour me out '
-
-``` python
 from whisper_normalizer.english import EnglishTextNormalizer
 
 english_normalizer = EnglishTextNormalizer()
@@ -118,7 +109,24 @@ english_normalizer("I'm a little teapot, short and stout. Tip me over and pour m
 
     'i am a little teapot short and stout tip me over and pour me out'
 
-### This model extends Whisper_normalizer to support Indic languages as well.
+``` python
+from whisper_normalizer.basic import BasicTextNormalizer
+
+normalizer = BasicTextNormalizer()
+normalizer("I'm a little teapot, short and stout. Tip me over and pour me out!")
+```
+
+    'i m a little teapot short and stout tip me over and pour me out '
+
+## Using BasicTextNormalizer in your mother tongue might be a bad idea
+
+Whisper Text Normalizer is not always recommended to be used. [Dr Kavya
+Manohar](https://www.linkedin.com/in/kavya-manohar/) has written a
+blogpost on why it might be a bad idea on her [blopost titled Indian
+Languages and Text Normalization: Part
+1](https://kavyamanohar.com/post/indic-normalizer/).
+
+## This model extends Whisper_normalizer to support Indic languages as well.
 
 The logic for normalization in Indic languages is derived from
 [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library).
