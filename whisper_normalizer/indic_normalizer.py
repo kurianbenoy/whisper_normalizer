@@ -432,7 +432,7 @@ class HindiNormalizer(BaseNormalizer):
         do_normalize_chandras=False,
         do_normalize_vowel_ending=False,
     ):
-        super(DevanagariNormalizer, self).__init__(
+        super(HindiNormalizer, self).__init__(
             lang,
             remove_nuktas,
             nasals_mode,
