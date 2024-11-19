@@ -462,7 +462,7 @@ class EnglishSpellingNormalizer:
     """
     Applies British-American spelling mappings as listed in [1].
 
-    [1] https://www.tysto.com/uk-us-spelling-list.html
+    [1] https://web.archive.org/web/20230326222449/https://www.tysto.com/uk-us-spelling-list.html
     """
 
     def __init__(self):
