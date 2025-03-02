@@ -2,6 +2,12 @@
 
 <!-- do not remove -->
 
+## 0.1.0
+
+- Add number normalization to indic method using num2words package
+- Remove network call used in English TextNormalizer
+
+
 ## 0.0.9
 
 - Add HindiNormalizer Method
