@@ -2,4 +2,5 @@ include settings.ini
 include LICENSE
 include CONTRIBUTING.md
 include README.md
+include whisper_normalizer/normalizers/english.json
 recursive-exclude * __pycache__
