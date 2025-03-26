@@ -506,7 +506,7 @@ class EnglishTextNormalizer:
             r"\bwanna\b": "want to",
             r"\bkinda\b": "kind of",
             r"\bsorta\b": "sort of",
-            r"\bdunno\b": "dont know",
+            r"\bdunno\b": "do not know",
             r"\bgotta\b": "got to",
             r"\bgonna\b": "going to",
             r"\bi'ma\b": "i am going to",
