@@ -504,9 +504,6 @@ class EnglishTextNormalizer:
             r"\bain't\b": "aint",
             r"\by'all\b": "you all",
             r"\bwanna\b": "want to",
-            r"\bkinda\b": "kind of",
-            r"\bsorta\b": "sort of",
-            r"\bdunno\b": "do not know",
             r"\bgotta\b": "got to",
             r"\bgonna\b": "going to",
             r"\bi'ma\b": "i am going to",
@@ -515,7 +512,6 @@ class EnglishTextNormalizer:
             r"\bcoulda\b": "could have",
             r"\bshoulda\b": "should have",
             r"\bma'am\b": "madam",
-            r"\bcause\b": "because",
             # contractions in titles/prefixes
             r"\bmr\b": "mister ",
             r"\bmrs\b": "missus ",
