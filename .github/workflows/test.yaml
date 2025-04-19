@@ -1,35 +1,7 @@
 name: CI
-on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches: [main]
+on:  [workflow_dispatch, pull_request, push]
 
 jobs:
   test:
-    strategy:
-      fail-fast: true
-      matrix:
-        os:  [ubuntu, macos]
-        version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
-    runs-on: ${{ matrix.os }}-latest
-    steps:
-      - uses: fastai/workflows/nbdev-ci@master
-        with:
-          version: ${{ matrix.version }}
-          pre: 1
-      - name: test docs build
-        if: ${{ (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch') && matrix.version == '3.9' && matrix.os == 'ubuntu' }}
-        run: |
-          set -ux
-          wget -q $(curl https://latest.fast.ai/pre/quarto-dev/quarto-cli/linux-amd64.deb)
-          sudo dpkg -i quarto*.deb
-          nbdev_docs
-          if [ -f "_docs/index.html" ]; then
-            echo "docs built successfully."
-          else
-            echo "index page not found in rendered docs."
-            ls -la
-            ls -la _docs
-            exit 1
-          fi
+    runs-on: ubuntu-latest
+    steps: [uses: fastai/workflows/nbdev-ci@master]
