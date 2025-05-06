@@ -2,6 +2,20 @@
 
 <!-- do not remove -->
 
+## 0.1.4
+
+This changelog mentions things done from v0.1.0 to v0.1.4:
+
+- Added EnglishNormalizer improvements #22 
+- Added PunjabiNormalizer
+- Switched to AI4Bharat IndicNumtowords package - https://github.com/AI4Bharat/indic-numtowords
+- Added `tts_mode`, for text normalizing and pronouncing currencies, decimals, emails, websites more easily for Indic TTS
+
+
+### New contributors
+
+@qiisziilbash 
+
 ## 0.1.0
 
 - Add number normalization to indic method using num2words package
@@ -20,6 +34,10 @@ Thanks to my colleagues Dhruv and Pranav for identifying mismatch in the version
 
 - Closes #10
 - Include Kayva's PR
+
+### New contributors
+
+@kavyamanohar
 
 
 ## 0.0.7
