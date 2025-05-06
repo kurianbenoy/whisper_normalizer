@@ -494,37 +494,54 @@ class HindiNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "एच टी टी पी एस कोलन स्लैश स्लैश ")
-                url = url.replace("http://", "एच टी टी पी कोलन स्लैश स्लैश ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "एच टी टी पी एस कोलन स्लैश स्लैश "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "एच टी टी पी कोलन स्लैश स्लैश "
+                    url = url[len("http://") :]
 
-                # Break domain name only, not TLD
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " डॉट " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " डॉट ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" स्लैश " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " स्लैश ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " स्लैश " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " डॉट ")
-                url = url.replace("/", " स्लैश ")
-                url = url.replace(":", " कोलन ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
+
+            # Normalize bare domains like www.amazon.in, openai.com
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " डॉट ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
             # Email normalization
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} एट {m.group(2)} डॉट {m.group(3)}",
                 text,
             )
-
             # Replace standalone special characters
             symbol_map = {
                 "&": " or ",
@@ -676,30 +693,47 @@ class PunjabiNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "ਐਚ ਟੀ ਟੀ ਪੀ ਐੱਸ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ ")
-                url = url.replace("http://", "ਐਚ ਟੀ ਟੀ ਪੀ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "ਐਚ ਟੀ ਟੀ ਪੀ ਐੱਸ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "ਐਚ ਟੀ ਟੀ ਪੀ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ "
+                    url = url[len("http://") :]
 
-                # Break domain name only, not TLD
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ਡਾਟ " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " ਡਾਟ ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" ਸਲੈਸ਼ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " ਸਲੈਸ਼ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " ਸਲੈਸ਼ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " ਡਾਟ ")
-                url = url.replace("/", " ਸਲੈਸ਼ ")
-                url = url.replace(":", " ਕੋਲਨ ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
+
+            # Normalize bare domains (e.g., www.amazon.in)
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " ਡਾਟ ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
 
             # Email normalization
             text = re.sub(
@@ -790,29 +824,47 @@ class TeluguNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "హెచ్ టి టి పి ఎస్ కొలన్ స్లాష్ స్లాష్ ")
-                url = url.replace("http://", "హెచ్ టి టి పి కొలన్ స్లాష్ స్లాష్ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "హెచ్ టి టి పి ఎస్ కొలన్ స్లాష్ స్లాష్ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "హెచ్ టి టి పి కొలన్ స్లాష్ స్లాష్ "
+                    url = url[len("http://") :]
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " డాట్ " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " డాట్ ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" స్లాష్ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " స్లాష్ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " స్లాష్ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " డాట్ ")
-                url = url.replace("/", " స్లాష్ ")
-                url = url.replace(":", " కొలన్ ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
+
+            # Normalize bare domain names
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " డాట్ ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
 
             # Email normalization
             text = re.sub(
@@ -820,7 +872,6 @@ class TeluguNormalizer(BaseNormalizer):
                 lambda m: f"{m.group(1)} అట్ {m.group(2)} డాట్ {m.group(3)}",
                 text,
             )
-
             # Replace standalone special characters
             symbol_map = {
                 "&": " or ",
@@ -846,7 +897,7 @@ class TeluguNormalizer(BaseNormalizer):
     def get_char_stats(self, text):
         pass
 
-# %% ../nbs/1b.indic_normalizer.ipynb 19
+# %% ../nbs/1b.indic_normalizer.ipynb 20
 class GujaratiNormalizer(BaseNormalizer):
     """
     Normalizer for the Gujarati script. In addition to basic normalization by the super class,
@@ -908,31 +959,49 @@ class GujaratiNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "એચ ટી ટી પીએસ કોલન સ્લેશ સ્લેશ ")
-                url = url.replace("http://", "એચ ટી ટી પી કોલન સ્લેશ સ્લેશ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "એચ ટી ટી પીએસ કોલન સ્લેશ સ્લેશ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "એચ ટી ટી પી કોલન સ્લેશ સ્લેશ "
+                    url = url[len("http://") :]
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ડોટ " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " ડોટ ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" સ્લેશ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " સ્લેશ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " સ્લેશ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " ડોટ ")
-                url = url.replace("/", " સ્લેશ ")
-                url = url.replace(":", " કોલન ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
 
-            # Email normalization
+            # Normalize bare domain names
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " ડોટ ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
+            # Normalize email addresses
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} એટ {m.group(2)} ડોટ {m.group(3)}",
@@ -960,7 +1029,7 @@ class GujaratiNormalizer(BaseNormalizer):
 
         return text
 
-# %% ../nbs/1b.indic_normalizer.ipynb 21
+# %% ../nbs/1b.indic_normalizer.ipynb 22
 class OdiaNormalizer(BaseNormalizer):
     """
     Normalizer for the Oriya script. In addition to basic normalization by the super class,
@@ -1064,29 +1133,46 @@ class OdiaNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "ଏଚ୍ ଟି ଟି ପି ଏସ୍ କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ ")
-                url = url.replace("http://", "ଏଚ୍ ଟି ଟି ପି କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "ଏଚ୍ ଟି ଟି ପି ଏସ୍ କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "ଏଚ୍ ଟି ଟି ପି କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ "
+                    url = url[len("http://") :]
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ଡଟ୍ " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " ଡଟ୍ ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" ସ୍ଲାଶ୍ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " ସ୍ଲାଶ୍ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " ସ୍ଲାଶ୍ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " ଡଟ୍ ")
-                url = url.replace("/", " ସ୍ଲାଶ୍ ")
-                url = url.replace(":", " କୋଲନ୍ ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
+
+            # Normalize bare domains like www.amazon.in, openai.com
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " ଡଟ୍ ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
 
             # Email normalization
             text = re.sub(
@@ -1117,7 +1203,7 @@ class OdiaNormalizer(BaseNormalizer):
 
         return text
 
-# %% ../nbs/1b.indic_normalizer.ipynb 23
+# %% ../nbs/1b.indic_normalizer.ipynb 24
 class BengaliNormalizer(BaseNormalizer):
     """
     Normalizer for the Bengali script. In addition to basic normalization by the super class,
@@ -1200,37 +1286,53 @@ class BengaliNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Full URL normalization
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "এইচ টি টি পি এস কোলন স্ল্যাশ স্ল্যাশ ")
-                url = url.replace("http://", "এইচ টি টি পি কোলন স্ল্যাশ স্ল্যাশ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "এইচ টি টি পি এস কোলন স্ল্যাশ স্ল্যাশ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "এইচ টি টি পি কোলন স্ল্যাশ স্ল্যাশ "
+                    url = url[len("http://") :]
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ডট " + m.group(2),
-                    domain,
+                domain_parts = domain.split(".")
+                spoken_domain = " ডট ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" স্ল্যাশ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " স্ল্যাশ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " স্ল্যাশ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " ডট ")
-                url = url.replace("/", " স্ল্যাশ ")
-                url = url.replace(":", " কোলন ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
 
-            # Email normalization
+            # Bare domain normalization
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " ডট ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
+            # Emails
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} অ্যাট {m.group(2)} ডট {m.group(3)}",
                 text,
             )
-
             # Replace standalone special characters
             symbol_map = {
                 "&": " or ",
@@ -1254,7 +1356,7 @@ class BengaliNormalizer(BaseNormalizer):
 
         return text
 
-# %% ../nbs/1b.indic_normalizer.ipynb 25
+# %% ../nbs/1b.indic_normalizer.ipynb 26
 class TamilNormalizer(BaseNormalizer):
     """
     Normalizer for the Tamil script. In addition to basic normalization by the super class,
@@ -1317,31 +1419,49 @@ class TamilNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "எச் டி டி பி எஸ் கோலன் ஸ்லாஷ் ஸ்லாஷ் ")
-                url = url.replace("http://", "எச் டி டி பி கோலன் ஸ்லாஷ் ஸ்லாஷ் ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "எச் டி டி பி எஸ் கோலன் ஸ்லாஷ் ஸ்லாஷ் "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "எச் டி டி பி கோலன் ஸ்லாஷ் ஸ்லாஷ் "
+                    url = url[len("http://") :]
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " டாட் " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " டாட் ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" ஸ்லாஷ் " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " ஸ்லாஷ் ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " ஸ்லாஷ் " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " டாட் ")
-                url = url.replace("/", " ஸ்லாஷ் ")
-                url = url.replace(":", " கோலன் ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
 
-            # Email normalization
+            # Normalize bare domains (www.amazon.in)
+            def normalize_bare_url(match):
+                domain_parts = match.group(0).split(".")
+                return " டாட் ".join(" ".join(part.upper()) for part in domain_parts)
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
+            # Emails
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} அட் {m.group(2)} டாட் {m.group(3)}",
@@ -1371,7 +1491,7 @@ class TamilNormalizer(BaseNormalizer):
 
         return text
 
-# %% ../nbs/1b.indic_normalizer.ipynb 27
+# %% ../nbs/1b.indic_normalizer.ipynb 29
 class KannadaNormalizer(BaseNormalizer):
     """
     Normalizer for the Kannada script. In addition to basic normalization by the super class,
@@ -1435,31 +1555,51 @@ class KannadaNormalizer(BaseNormalizer):
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "ಎಚ್ ಟಿ ಟಿ ಪಿ ಎಸ್ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ ")
-                url = url.replace("http://", "ಎಚ್ ಟಿ ಟಿ ಪಿ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ ")
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "ಎಚ್ ಟಿ ಟಿ ಪಿ ಎಸ್ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "ಎಚ್ ಟಿ ಟಿ ಪಿ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ "
+                    url = url[len("http://") :]
 
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ಡಾಟ್ " + m.group(2),
-                    domain,
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+
+                domain_parts = domain.split(".")
+                spoken_domain = " ಡಾಟ್ ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
 
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" ಸ್ಲ್ಯಾಶ್ " + rest if rest else "")
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " ಸ್ಲ್ಯಾಶ್ ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " ಸ್ಲ್ಯಾಶ್ " + spoken_path if spoken_path else ""
 
-                url = url.replace(".", " ಡಾಟ್ ")
-                url = url.replace("/", " ಸ್ಲ್ಯಾಶ್ ")
-                url = url.replace(":", " ಕೋಲನ್ ")
-                return url.strip()
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
 
-            # Email normalization
+            # Normalize bare domains like www.amazon.in
+            def normalize_bare_url(match):
+                url = match.group(0)
+                domain_parts = url.split(".")
+                spoken = " ಡಾಟ್ ".join(" ".join(part.upper()) for part in domain_parts)
+                return spoken
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
+            # Normalize email
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} ಅಟ್ {m.group(2)} ಡಾಟ್ {m.group(3)}",
@@ -1488,7 +1628,7 @@ class KannadaNormalizer(BaseNormalizer):
 
         return text
 
-# %% ../nbs/1b.indic_normalizer.ipynb 29
+# %% ../nbs/1b.indic_normalizer.ipynb 31
 class MalayalamNormalizer(BaseNormalizer):
     """
     Normalizer for the Malayalam script. In addition to basic normalization by the super class,
@@ -1585,45 +1725,61 @@ class MalayalamNormalizer(BaseNormalizer):
             text = re.sub(r"KRW\s+(\d+)", r"കൊറിയൻ വോൺ \1", text)
             text = re.sub(r"₩\s*(\d+)", r"കൊറിയൻ വോൺ \1", text)
 
-            # Handle decimal numbers
+            # Decimal numbers
             def replace_decimal(match):
                 whole, frac = match.group(1), match.group(2)
                 return f"{whole} പോയിന്റ് {frac}"
 
             text = re.sub(r"(\d+)\.(\d+)", replace_decimal, text)
 
-            # Normalize URLs before replacing symbols
+            # Normalize full URLs (http/https)
             def normalize_url(match):
                 url = match.group(0)
-                url = url.replace("https://", "എച്ച് ടി ടി പി എസ് കോളൺ സ്ലാഷ് സ്ലാഷ് ")
-                url = url.replace("http://", "എച്ച് ടി ടി പി കോളൺ സ്ലാഷ് സ്ലാഷ് ")
-
-                domain_parts = url.split("/")
-                domain = domain_parts[0]
-                domain = re.sub(
-                    r"([a-zA-Z]+)\.([a-z]{2,3})(?=\b|/)",
-                    lambda m: " ".join(m.group(1)) + " ഡോട്ട് " + m.group(2),
-                    domain,
+                scheme = ""
+                if url.startswith("https://"):
+                    scheme = "എച്ച് ടി ടി പി എസ് കോളൺ സ്ലാഷ് സ്ലാഷ് "
+                    url = url[len("https://") :]
+                elif url.startswith("http://"):
+                    scheme = "എച്ച് ടി ടി പി കോളൺ സ്ലാഷ് സ്ലാഷ് "
+                    url = url[len("http://") :]
+                parts = url.split("/", 1)
+                domain = parts[0]
+                path = parts[1] if len(parts) > 1 else ""
+                domain_parts = domain.split(".")
+                spoken_domain = " ഡോട്ട് ".join(
+                    " ".join(part.upper()) for part in domain_parts
                 )
-
-                rest = "/".join(domain_parts[1:])
-                url = domain + (" സ്ലാഷ് " + rest if rest else "")
-
-                url = url.replace(".", " ഡോട്ട് ")
-                url = url.replace("/", " സ്ലാഷ് ")
-                url = url.replace(":", " കോളൺ ")
-                return url.strip()
+                spoken_path = ""
+                if path:
+                    path_parts = path.split("/")
+                    spoken_path = " സ്ലാഷ് ".join(
+                        " ".join(p.upper()) for p in path_parts if p
+                    )
+                    spoken_path = " സ്ലാഷ് " + spoken_path if spoken_path else ""
+                return f"{scheme}{spoken_domain}{spoken_path}".strip()
 
             text = re.sub(r"https?://[^\s]+", normalize_url, text)
 
-            # Email normalization
+            # Normalize bare domain URLs (like www.amazon.in)
+            def normalize_bare_url(match):
+                url = match.group(0)
+                domain_parts = url.split(".")
+                spoken = " ഡോട്ട് ".join(" ".join(part.upper()) for part in domain_parts)
+                return spoken
+
+            bare_url_tld_pattern = r"\b(?:www\.)?[\w-]+\.(?:com|in|org|net|edu|gov|ai|co|io|info|biz|nic\.in|ac\.in|gov\.in)\b"
+            text = re.sub(
+                bare_url_tld_pattern, normalize_bare_url, text, flags=re.IGNORECASE
+            )
+
+            # Normalize emails
             text = re.sub(
                 r"\b([\w\.-]+)@([\w\.-]+)\.(\w+)\b",
                 lambda m: f"{m.group(1)} അറ്റ് {m.group(2)} ഡോട്ട് {m.group(3)}",
                 text,
             )
 
-            # Replace standalone special characters
+            # Replace special characters
             symbol_map = {
                 "&": " or ",
                 "@": " at ",
