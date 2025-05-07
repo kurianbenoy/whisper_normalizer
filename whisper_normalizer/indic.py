@@ -556,12 +556,17 @@ class HindiNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="hi"))
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 14
 class PunjabiNormalizer(BaseNormalizer):
@@ -756,13 +761,18 @@ class PunjabiNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="pa"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 17
 class TeluguNormalizer(BaseNormalizer):
@@ -886,16 +896,18 @@ class TeluguNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="te"))
 
-        return text
-
-    def get_char_stats(self, text):
-        pass
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 20
 class GujaratiNormalizer(BaseNormalizer):
@@ -1021,13 +1033,18 @@ class GujaratiNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="gu"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 22
 class OdiaNormalizer(BaseNormalizer):
@@ -1195,13 +1212,18 @@ class OdiaNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="or"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 24
 class BengaliNormalizer(BaseNormalizer):
@@ -1348,13 +1370,18 @@ class BengaliNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="bn"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 26
 class TamilNormalizer(BaseNormalizer):
@@ -1483,13 +1510,18 @@ class TamilNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="ta"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 29
 class KannadaNormalizer(BaseNormalizer):
@@ -1620,13 +1652,18 @@ class KannadaNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="kn"))
 
-        return text
+        return text.lower()
 
 # %% ../nbs/1b.indic_normalizer.ipynb 31
 class MalayalamNormalizer(BaseNormalizer):
@@ -1793,10 +1830,15 @@ class MalayalamNormalizer(BaseNormalizer):
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
 
+            def expand_acronyms(match):
+                return " ".join(match.group(0))
+
+            text = re.sub(r"\b[A-Z]{2,}\b", expand_acronyms, text)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
                 text = text.replace(part, num2words(part, lang="ml"))
 
-        return text
+        return text.lower()
