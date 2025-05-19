@@ -465,8 +465,8 @@ class EnglishSpellingNormalizer:
     """
 
     def __init__(self):
-        english_json_path = files("whisper_normalizer.normalizers").joinpath(
-            "english.json"
+        english_json_path = files("whisper_normalizer").joinpath(
+            "normalizers/english.json"
         )
         with open(english_json_path, "r") as english_normalization_dict:
             self.mapping = json.load(english_normalization_dict)
