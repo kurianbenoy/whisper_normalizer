@@ -95,7 +95,7 @@ class TextNormalisationRequest(BaseModel):
     options: Optional[Dict[str, Any]] = Field(
         default=None,
         description="Options for normalization. For English: leave empty/null. For other languages: check GET /options/{language}",
-        example=None  # This explicitly sets the example to null
+        example=None  
     )
 
 class TextNormalisationResponse(BaseModel):
@@ -112,6 +112,40 @@ def get_normalizer(language: LanguageCodes, options: Optional[dict] = None):
     if not options:
         return normalizer_class()
     
+    VALID_OPTIONS = {
+        'english': set(), 
+        'basic': {'remove_diacritics', 'split_letters'},
+        'indic': {'remove_nuktas', 'nasals_mode', 'do_normalize_chandras', 'do_normalize_vowel_ending', 'tts_mode'},
+        'bengali': {'remove_nuktas', 'nasals_mode', 'do_normalize_chandras', 'do_normalize_vowel_ending', 'tts_mode', 'do_remap_assamese_chars'},
+        'punjabi': {'remove_nuktas', 'nasals_mode', 'do_normalize_chandras', 'do_normalize_vowel_ending', 'tts_mode', 'do_canonicalize_addak', 'do_canonicalize_tippi', 'do_replace_vowel_bases'},
+        'odia': {'remove_nuktas', 'nasals_mode', 'do_normalize_chandras', 'do_normalize_vowel_ending', 'tts_mode', 'do_remap_wa'}
+    }
+
+
+    LANGUAGE_OPTION_MAP = {
+        LanguageCodes.ENGLISH: 'english',
+        LanguageCodes.BASIC: 'basic',
+        LanguageCodes.BENGALI: 'bengali',
+        LanguageCodes.PUNJABI: 'punjabi',
+        LanguageCodes.ODIYA: 'odia',
+        LanguageCodes.HINDI: 'indic',
+        LanguageCodes.TAMIL: 'indic',
+        LanguageCodes.TELUGU: 'indic',
+        LanguageCodes.KANNADA: 'indic',
+        LanguageCodes.MALAYALAM: 'indic',
+        LanguageCodes.GUJARATI: 'indic',
+        LanguageCodes.DEVANAGARI: 'indic'
+    }
+
+    option_category = LANGUAGE_OPTION_MAP[language]
+    valid_options  = VALID_OPTIONS[option_category]
+    provided_options = set(options.keys())
+    invalid_options = provided_options - valid_options
+
+    if invalid_options:
+        if language == LanguageCodes.ENGLISH:
+            raise HTTPException(status_code=400, detail="English normalizer does not take any options")
+        raise HTTPException(status_code=400, detail=f"Invalid options for {language} normalizer [{', '.join(invalid_options)}]. Valid options are: {', '.join(valid_options)}")
     try:
 
         if language == LanguageCodes.ENGLISH:
@@ -196,15 +230,20 @@ def get_supported_languages() -> dict:
         ]
     }
 
-@app.post('/normalize',response_model=TextNormalisationResponse)
+@app.post('/normalize', response_model=TextNormalisationResponse)
 def normalize_text(request: TextNormalisationRequest) -> TextNormalisationResponse:
-
     try:
-        normalizer = get_normalizer(request.language , request.options)
+        normalizer = get_normalizer(request.language, request.options)
         normalized_text = normalizer(request.text)
-        return TextNormalisationResponse(normalized_text=normalized_text, language_used=request.language.value, options_used= request.options)
+        return TextNormalisationResponse(
+            normalized_text=normalized_text, 
+            language_used=request.language.value, 
+            options_used=request.options
+        )
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.get('/nasals_modes')
 def get_nasals_modes() -> dict:
@@ -252,3 +291,6 @@ def get_language_options(language: LanguageCodes) -> dict:
         "language": language.value,
         "available_options": option_schemas[language]
     }
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
