@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+fastapi = {extras = ["standard"], version = "*"}
+pydantic = "*"
+more-itertools = "*"
+regex = "*"
+indic-numtowords = "*"
 
 [dev-packages]
 
