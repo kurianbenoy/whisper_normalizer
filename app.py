@@ -243,7 +243,9 @@ def normalize_text(request: TextNormalisationRequest) -> TextNormalisationRespon
     except HTTPException as http_exc:
         raise http_exc
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        ) from e
 
 @app.get('/nasals_modes')
 def get_nasals_modes() -> dict:
