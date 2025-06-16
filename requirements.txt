@@ -1,5 +1,0 @@
-fastapi[standard]
-pydantic
-more_itertools
-regex
-indic-numtowords

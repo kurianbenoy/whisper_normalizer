@@ -8,12 +8,16 @@ WORKDIR /app
 # This excludes app.py for now (better caching)
 COPY . ./
 
-# Install the package and all dependencies 
-# (gets cached unless package files change)
+# Install the core whisper_normalizer package first
+# (gets cached unless core package files change)
 RUN pip install --no-cache-dir -e .
 
+# Install web API dependencies separately
+# (gets cached unless webapp requirements change)
+RUN pip install --no-cache-dir -r ./examples/sample_webapp/requirements.txt
+
 # Copy app.py separately (changes frequently)
-COPY app.py ./
+COPY ./examples/sample_webapp/app.py ./
 
 # Expose the port your app runs on
 EXPOSE 8000
