@@ -12,8 +12,8 @@
 > package which was derived from
 > [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library).
 
-[![PyPI
-Downloads](https://static.pepy.tech/badge/whisper-normalizer.png)](https://pepy.tech/projects/whisper-normalizer)
+
+[![PyPI Downloads](https://static.pepy.tech/badge/whisper-normalizer)](https://pepy.tech/projects/whisper-normalizer)
 [![Github
 license](https://img.shields.io/github/license/kurianbenoy/whisper_normalizer.svg)](https://github.com/kurianbenoy/whisper_normalizer/blob/main/LICENSE)
 [![Github
