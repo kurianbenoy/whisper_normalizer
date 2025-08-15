@@ -12,6 +12,8 @@
 > package which was derived from
 > [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library).
 
+[![PyPI
+Downloads](https://static.pepy.tech/badge/whisper-normalizer.png)](https://pepy.tech/projects/whisper-normalizer)
 [![Github
 license](https://img.shields.io/github/license/kurianbenoy/whisper_normalizer.svg)](https://github.com/kurianbenoy/whisper_normalizer/blob/main/LICENSE)
 [![Github
@@ -54,8 +56,7 @@ through](https://colab.research.google.com/gist/kurianbenoy/7d27d9ec193a4a97ec78
 [Github Gist Link of walk
 through](https://gist.github.com/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506)
 
-[![Hello world to
-whisper_normalizer](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
+[![](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
 
 ## Why should we normalize/standardize text?
 
