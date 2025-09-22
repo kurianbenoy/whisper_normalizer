@@ -14,8 +14,6 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+Please inform about vulnerabilities [privately via email to kurian.bkk@gmail.com](mailto:kurian.bkk@gmail.com). I will try to respond back to email within 7 days and get back to you.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+This project is currently only solely maintained by Kurian Benoy. So any contributions to vulnerabilities via pull requests are much appreciated and will be merged.
