@@ -1,0 +1,23 @@
+/*TEAM */
+
+Kurian Benoy
+ML Engineer
+[@kurianbenoy2](https://x.com/kurianbenoy2), [kurianbenoy](https://in.linkedin.com/in/kurianbenoy)
+Kochi
+
+................
+
+/*THANKS*/
+
+- OpenAI for BasicTextNormalizer, EnglishNormalizer
+- AI4Bharat for [IndicNum2words](https://github.com/AI4Bharat/indic-numtowords). [Mohammed Safi](https://github.com/safikhanSoofiyani) who is the major maintainer of IndicNum2words
+- [Kavya Manohar](https://github.com/kavyamanohar) for Malayalam Changes
+- [Mario Shafiei](https://github.com/qiisziilbash) for Making additions to EnglishNormalizer
+- All other maintainers of this project
+
+.....
+
+/*SITE*/
+
+Last Update: It's updated based on each commit in whisper-normalizer website
+Standards: NBDEV
