@@ -7,7 +7,7 @@ Docs: https://kurianbenoy.github.io/whisper_normalizer/english.html.md"""
 # %% auto #0
 __all__ = ['EnglishNumberNormalizer', 'EnglishSpellingNormalizer', 'EnglishTextNormalizer']
 
-# %% ../nbs/01_english.ipynb #e975e1e2
+# %% ../nbs/01_english.ipynb #cd79af68
 # This code is from OpenAI Whisper Repository: https://github.com/openai/whisper/tree/main/whisper/normalizers
 import json
 import re
@@ -457,7 +457,7 @@ class EnglishNumberNormalizer:
 
         return s
 
-# %% ../nbs/01_english.ipynb #d9af0799
+# %% ../nbs/01_english.ipynb #91d66efa
 class EnglishSpellingNormalizer:
     """
     Applies British-American spelling mappings as listed in [1].
@@ -475,7 +475,7 @@ class EnglishSpellingNormalizer:
     def __call__(self, s: str):
         return " ".join(self.mapping.get(word, word) for word in s.split())
 
-# %% ../nbs/01_english.ipynb #790fcbaa
+# %% ../nbs/01_english.ipynb #6528de7a
 class EnglishTextNormalizer:
     """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper. As per the text normalization/standardization approach  Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `EnglishTextNormalizer` does the following functionality:
 
