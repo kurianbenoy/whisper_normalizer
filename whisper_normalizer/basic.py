@@ -7,7 +7,7 @@ Docs: https://kurianbenoy.github.io/whisper_normalizer/basic.html.md"""
 # %% auto #0
 __all__ = ['ADDITIONAL_DIACRITICS', 'remove_symbols_and_diacritics', 'remove_symbols', 'BasicTextNormalizer']
 
-# %% ../nbs/00_basic.ipynb #1e0310d7
+# %% ../nbs/00_basic.ipynb #2eb4996d
 # This code is from OpenAI Whisper Repository: https://github.com/openai/whisper/tree/main/whisper/normalizers
 import re
 import unicodedata
@@ -63,16 +63,18 @@ def remove_symbols_and_diacritics(s: str, keep=""):
     )
 
 
-def remove_symbols(s: str):
+def remove_symbols(s: str, preserve_marks: bool = False):
     """
-    Replace any other markers, symbols, punctuations with a space, keeping diacritics
+    Replace symbols and punctuations with a space, optionally preserving Unicode marks
     """
     return "".join(
-        " " if unicodedata.category(c)[0] in "MSP" else c
+        " "
+        if unicodedata.category(c)[0] in ("SP" if preserve_marks else "MSP")
+        else c
         for c in unicodedata.normalize("NFKC", s)
     )
 
-# %% ../nbs/00_basic.ipynb #6cf04e83
+# %% ../nbs/00_basic.ipynb #668aac6d
 class BasicTextNormalizer:
     """As per the text normalization/standardization approach mentioned in  Appendix Section C pp.21 in  the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `BasicTextNormalizer` does the following functionality:
 
@@ -90,13 +92,22 @@ class BasicTextNormalizer:
         self,
         remove_diacritics: bool = False,
         split_letters: bool = False,
+        preserve_marks: bool = False,
     ):
         """
         remove_diaciritics - Replace any other markers, symbols, and punctuations with a space and drop any diacritics
         split_letters  - It uses a regular expression \X to find all Unicode graphemes (extended grapheme clusters) in the string s and join them together by space
+        preserve_marks - Keep Unicode Mark characters, such as Brahmic vowel signs and viramas
         """
+        if remove_diacritics and preserve_marks:
+            raise ValueError(
+                "preserve_marks cannot be used with remove_diacritics=True"
+            )
+
         self.clean = (
-            remove_symbols_and_diacritics if remove_diacritics else remove_symbols
+            remove_symbols_and_diacritics
+            if remove_diacritics
+            else lambda s: remove_symbols(s, preserve_marks=preserve_marks)
         )
         self.split_letters = split_letters
 
