@@ -1,32 +1,54 @@
 [build-system]
-requires = ["setuptools>=64.0"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name="whisper_normalizer"
-requires-python=">=3.9"
-dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "entry-points", "scripts"]
+name = "whisper_normalizer"
+dynamic = ["version"]
+description = "A python package for whisper normalizer"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{name = "kurianbenoy", email = "kurian.bkk@gmail.com"}]
+keywords = ['nbdev', 'jupyter', 'notebook', 'openai', 'whisper', 'normalizer']
 classifiers = [
   "Typing :: Typed",
+  "Natural Language :: English",
   "Intended Audience :: Developers",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Operating System :: OS Independent",
   "Operating System :: POSIX",
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
   "Operating System :: Microsoft :: Windows",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: OSI Approved :: MIT License"
 ]
+dependencies = ['more_itertools', 'regex', 'indic-numtowords']
 
 [project.urls]
 Homepage = "https://kurianbenoy.github.io/whisper_normalizer/"
 Repository = "https://github.com/kurianbenoy/whisper_normalizer"
+Documentation = "https://kurianbenoy.github.io/whisper_normalizer"
 
-[tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
+[project.entry-points.nbdev]
+whisper_normalizer = "whisper_normalizer._modidx:d"
+
+[project.optional-dependencies]
+dev = ['black', 'nbdev', 'twine', 'ipykernel']
+
+[tool.setuptools.dynamic]
+version = {attr = "whisper_normalizer.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["whisper_normalizer*"]
+
+[tool.nbdev]
+jupyter_hooks = true

@@ -7,3 +7,8 @@ website:
   description: "A python package for whisper normalizer"
   repo-branch: main
   repo-url: "https://github.com/kurianbenoy/whisper_normalizer"
+
+format-links:
+  - html
+  - format: commonmark
+    text: Markdown
