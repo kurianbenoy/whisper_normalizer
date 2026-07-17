@@ -31,7 +31,7 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ['more_itertools', 'regex', 'indic-numtowords']
+dependencies = ['more_itertools', 'regex', 'indic-numtowords @ git+https://github.com/AI4Bharat/indic-numtowords.git']
 
 [project.urls]
 Homepage = "https://kurianbenoy.github.io/whisper_normalizer/"
