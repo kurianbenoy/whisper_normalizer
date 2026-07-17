@@ -86,12 +86,14 @@ normalizer("I'm a little teapot, short and stout. Tip me over and pour me out!")
 
 Whisper Text Normalizer is not always recommended to be used. [Dr Kavya Manohar](https://www.linkedin.com/in/kavya-manohar/) has written a blogpost on why it might be a bad idea on her [blopost titled Indian Languages and Text Normalization: Part 1](https://kavyamanohar.com/post/indic-normalizer/).
 
+If you need the basic normalizer for Indic or other scripts that use Unicode Mark characters, use `BasicTextNormalizer(preserve_marks=True)`. This preserves combining marks such as Brahmic vowel signs and viramas while retaining the remaining basic normalization behavior.
+
 ## This model extends Whisper_normalizer to support Indic languages as well.
 
 The logic for normalization in Indic languages is derived from [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library). The logic for Malayalam normalization is expanded beyond the Indic NLP library by [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#malayalamnormalizer).
 
 ``` python
-from whisper_normalizer.indic_normalizer import MalayalamNormalizer
+from whisper_normalizer.indic import MalayalamNormalizer
 
 normalizer = MalayalamNormalizer()
 normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ.")

@@ -85,7 +85,7 @@ class BasicTextNormalizer:
         4. make the text lowercase.
         5. replace any successive whitespace characters with a space
 
-    Note: It's not recommended to use this function for non-english languages because it may removes vowels in languages as identified by [kavya in this tweet](https://twitter.com/kavya_manohar/status/1752574864618365059).
+    Note: The default behavior is not recommended for non-English languages because it may remove vowels, as identified by [Kavya in this tweet](https://twitter.com/kavya_manohar/status/1752574864618365059). For scripts that use Unicode Mark characters, set `preserve_marks=True` to retain combining marks such as Brahmic vowel signs and viramas.
     """
 
     def __init__(
