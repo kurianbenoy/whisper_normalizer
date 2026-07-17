@@ -1,10 +1,10 @@
 # Release notes
 
 <!-- do not remove -->
+
 ## 0.1.14
 
-- Prevent distribution of the obsolete `whisper_normalizer.indic_normalizer` module; use `whisper_normalizer.indic` for Indic normalizers.
-- Document `BasicTextNormalizer(preserve_marks=True)` for scripts that use Unicode Mark characters.
+
 
 ## 0.1.13 - 2026-07-16
 
