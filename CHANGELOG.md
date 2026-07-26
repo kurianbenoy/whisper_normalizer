@@ -5,11 +5,14 @@
 ## 0.1.15 - 2026-07-26
 
 - Added text normalizers for French, Spanish, Arabic, Chinese, and Russian.
-- Added language-specific handling for written numbers, numeric separators, Unicode variants, and punctuation in the new normalizers.
+- Added French and Spanish written-number conversion, localized decimal and thousands-separator handling, and accent-preserving punctuation cleanup.
+- Added Arabic diacritic and tatweel removal, orthographic-variant normalization, and Arabic-Indic digit conversion.
+- Added Chinese written-numeral conversion and whitespace-free punctuation normalization.
+- Added Russian `ё`/`е` normalization and localized numeric-separator handling.
 
 ## 0.1.14 - 2026-07-17
 
-- Documented the `preserve_marks=True` option for retaining Unicode Mark characters in `BasicTextNormalizer`.
+- Documented the `preserve_marks=True` option for retaining Unicode Mark characters in `BasicTextNormalizer`, including its intended use for scripts where marks are meaningful.
 
 ## 0.1.13 - 2026-07-16
 
