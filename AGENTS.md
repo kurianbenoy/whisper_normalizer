@@ -32,6 +32,15 @@ Tests are notebook assertions, run by `nbdev_test`; add or update an assertion a
 
 Recent history uses short, imperative subjects such as `update README`, `format code`, and `Pin requirements.txt for sample_web_app`. Keep commits focused and use that style. Pull requests should explain the user-visible change, list validation commands run, link relevant issues, and include screenshots for documentation or sample-webapp UI changes.
 
+## Release Notes
+
+- Update `CHANGELOG.md` for every released version. Use a `## X.Y.Z - YYYY-MM-DD` heading and place new releases above older ones.
+- Write entries from a user's perspective: name new normalizers, options, supported languages, and behavior changes rather than only citing implementation files or dependency updates.
+- Include concise details that distinguish the release, such as supported scripts, number handling, punctuation behavior, compatibility fixes, or migration requirements.
+- Determine a release's contents from the commits between the preceding version tag and the release commit. Do not duplicate an earlier release note unless the newer release adds a distinct user-visible change.
+- Keep release notes as Markdown bullets and mention issue or pull-request numbers when they are known.
+- For documentation-only releases, state exactly which feature or workflow was documented; do not describe it as a newly added runtime feature.
+
 ## Security & Dependencies
 
 Report vulnerabilities through the process in `SECURITY.md`. Keep runtime dependencies in `settings.ini`; do not add generated environments, caches, or build artifacts to commits.
