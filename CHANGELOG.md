@@ -2,13 +2,14 @@
 
 <!-- do not remove -->
 
-## 0.1.15
+## 0.1.15 - 2026-07-26
 
+- Added text normalizers for French, Spanish, Arabic, Chinese, and Russian.
+- Added language-specific handling for written numbers, numeric separators, Unicode variants, and punctuation in the new normalizers.
 
+## 0.1.14 - 2026-07-17
 
-## 0.1.14
-
-
+- Documented the `preserve_marks=True` option for retaining Unicode Mark characters in `BasicTextNormalizer`.
 
 ## 0.1.13 - 2026-07-16
 
