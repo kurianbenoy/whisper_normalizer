@@ -1249,7 +1249,7 @@ class BengaliNormalizer(BaseNormalizer):
             do_normalize_vowel_ending,
         )
         self.do_remap_assamese_chars = do_remap_assamese_chars
-        self.tts_mode = True
+        self.tts_mode = tts_mode
 
     def __call__(self, text: str):
         # common normalization for Indic scripts
