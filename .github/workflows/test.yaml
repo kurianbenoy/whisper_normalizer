@@ -15,7 +15,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Current nbdev releases require Python 3.10 or later.
         python-version: ["3.10", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +26,60 @@ jobs:
           enable-cache: true
       - run: uv sync --all-extras
       - run: uv run nbdev-test
+
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --all-extras
+      - run: uv run python -m build --wheel --no-isolation
+      - run: uv run twine check dist/*
+      - name: Clean-environment import test
+        run: |
+          python -c "
+import sys
+import subprocess
+import tempfile
+import os
+
+# Create a fresh virtual environment
+with tempfile.TemporaryDirectory() as tmpdir:
+    venv_path = os.path.join(tmpdir, 'venv')
+    subprocess.run([sys.executable, '-m', 'venv', venv_path], check=True)
+    
+    # Install the built wheel
+    wheel = [f for f in os.listdir('dist') if f.endswith('.whl')][0]
+    pip = os.path.join(venv_path, 'bin', 'pip')
+    subprocess.run([pip, 'install', f'dist/{wheel}'], check=True)
+    
+    # Test import and basic functionality
+    python = os.path.join(venv_path, 'bin', 'python')
+    result = subprocess.run([
+        python, '-c', '''
+import whisper_normalizer
+from whisper_normalizer import get_normalizer, supported_languages
+
+# Test basic import
+print(f"Version: {whisper_normalizer.__version__}")
+
+# Test factory API
+norm = get_normalizer("en")
+print(f"English: {norm('Hello WORLD!')}")
+
+norm_hi = get_normalizer("hi", tts_mode=True)
+print(f"Hindi TTS: {norm_hi('नमस्ते ₹100')}")
+
+# Test supported_languages
+langs = supported_languages()
+print(f"Supported languages: {len(langs)}")
+print("Import test PASSED")
+'''
+    ], check=True, capture_output=True, text=True)
+    print(result.stdout)
+"
