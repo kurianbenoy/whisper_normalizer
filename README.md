@@ -36,7 +36,7 @@ pip install git+https://github.com/kurianbenoy/whisper_normalizer.git
 
 [Github Gist Link of walk through](https://gist.github.com/kurianbenoy/7d27d9ec193a4a97ec7821235bddc506)
 
-[![Hello world to whisper_normalizer](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
+[![](https://img.youtube.com/vi/c7trf0zul6g/0.jpg)](https://www.youtube.com/watch?v=c7trf0zul6g)
 
 ## Why should we normalize/standardize text?
 
@@ -91,6 +91,65 @@ If you need the basic normalizer for Indic or other scripts that use Unicode Mar
 ## This model extends Whisper_normalizer to support Indic languages as well.
 
 The logic for normalization in Indic languages is derived from [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library). The logic for Malayalam normalization is expanded beyond the Indic NLP library by [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#malayalamnormalizer).
+
+## TTS Mode for Indic Languages
+
+Several Indic normalizers support a `tts_mode=True` option that converts text into a form suitable for text-to-speech synthesis. When enabled, the normalizer will:
+
+- Convert currency symbols to spoken forms (₹100 → “रुपये एक सौ”, \$20 → “डॉलर बीस”)
+- Convert decimal numbers to spoken form (1.5 → “एक पॉइंट पांच”)
+- Expand URLs and domains to spoken form (https://example.com → “एच टी टी पी एस कोलन स्लैश स्लैश ई एक्स ए एम पी एल ई डॉट कॉम”)
+- Expand email addresses (user@example.com → “यूजर एट एक्साम्पल डॉट कॉम”)
+- Expand special symbols (& → ” or “, @ →” at “, % →” percent “, etc.)
+- Expand acronyms (NASA → “N A S A”)
+
+### Supported Languages
+
+The following Indic languages support `tts_mode`:
+
+| Language | Code | Normalizer |
+|----|----|----|
+| Hindi | `hi` | [`HindiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#hindinormalizer) |
+| Bengali | `bn` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#bengalinormalizer) |
+| Gujarati | `gu` | [`GujaratiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#gujaratinormalizer) |
+| Odia | `or` | [`OdiaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#odianormalizer) |
+| Punjabi | `pa` | [`PunjabiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#punjabinormalizer) |
+| Tamil | `ta` | [`TamilNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#tamilnormalizer) |
+| Telugu | `te` | [`TeluguNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#telugunormalizer) |
+| Kannada | `kn` | [`KannadaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#kannadanormalizer) |
+| Malayalam | `ml` | [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#malayalamnormalizer) |
+| Assamese | `as` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#bengalinormalizer) (via script tier) |
+
+### Usage
+
+``` python
+from whisper_normalizer import get_normalizer
+
+# Get a normalizer with TTS mode enabled
+normalizer = get_normalizer("hi", tts_mode=True)
+result = normalizer("नमस्ते ₹100 और $20.50")
+# Output: "नमस्ते रुपये एक सौ और डॉलर बीस पॉइंट पांच शून्य"
+```
+
+Or use the normalizer class directly:
+
+``` python
+from whisper_normalizer.indic import HindiNormalizer
+
+normalizer = HindiNormalizer(tts_mode=True)
+result = normalizer("Visit https://example.com or email user@example.com")
+# Output: "visit एच टी टी पी एस कोलन स्लैश स्लैश ई एक्स ए एम पी एल ई डॉट कॉम or यूजर एट एक्साम्पल डॉट कॉम"
+```
+
+### Factory API Validation
+
+The [`get_normalizer`](https://kurianbenoy.github.io/whisper_normalizer/multilingual.html#get_normalizer) factory validates options and raises `ValueError` if `tts_mode` is not supported:
+
+``` python
+from whisper_normalizer import get_normalizer
+
+get_normalizer("en", tts_mode=True)  # Raises ValueError: English normalizer does not support option(s): tts_mode
+```
 
 ``` python
 from whisper_normalizer.indic import MalayalamNormalizer
