@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write  # Required for PyPI Trusted Publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --all-extras
+      - run: uv run python -m build --wheel --no-isolation
+      - run: uv run twine check dist/*
+      - name: Clean-environment import test
+        run: |
+          python -c "
+import sys
+import subprocess
+import tempfile
+import os
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    venv_path = os.path.join(tmpdir, 'venv')
+    subprocess.run([sys.executable, '-m', 'venv', venv_path], check=True)
+    
+    wheel = [f for f in os.listdir('dist') if f.endswith('.whl')][0]
+    pip = os.path.join(venv_path, 'bin', 'pip')
+    subprocess.run([pip, 'install', f'dist/{wheel}'], check=True)
+    
+    python = os.path.join(venv_path, 'bin', 'python')
+    result = subprocess.run([
+        python, '-c', '''
+import whisper_normalizer
+from whisper_normalizer import get_normalizer, supported_languages
+
+print(f"Version: {whisper_normalizer.__version__}")
+norm = get_normalizer("en")
+print(f"English: {norm('Hello WORLD!')}")
+norm_hi = get_normalizer("hi", tts_mode=True)
+print(f"Hindi TTS: {norm_hi('नमस्ते ₹100')}")
+langs = supported_languages()
+print(f"Supported languages: {len(langs)}")
+print("Import test PASSED")
+'''
+    ], check=True, capture_output=True, text=True)
+    print(result.stdout)
+"
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
