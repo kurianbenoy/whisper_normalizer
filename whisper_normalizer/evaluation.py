@@ -80,7 +80,7 @@ def _levenshtein_alignment(reference: Sequence[str], hypothesis: Sequence[str]) 
 
 
 # %% auto #0
-__all__ = ['OIWER_REFERENCE_IMPLEMENTATION', 'LLM_WER_PROMPT_SOURCE', 'normalize_for_evaluation', 'Alignment', 'wer',
+__all__ = ['OIWER_REFERENCE_IMPLEMENTATION', 'LLM_WER_PROMPT_SOURCE', 'normalize_for_evaluation', 'Alignment', 'wer', 'cer',
            'oiwer_alignment', 'oiwer', 'llm_wer']
 
 # %% ../nbs/03_evaluation.ipynb #b58bab76
@@ -88,6 +88,30 @@ def wer(reference: str, hypothesis: str) -> float:
     """Return conventional WER as a fraction, after Unicode NFC normalization."""
     reference_tokens = _tokens(reference)
     return _levenshtein_alignment(reference_tokens, _tokens(hypothesis)).errors / len(reference_tokens) if reference_tokens else 0.0
+
+
+def _levenshtein_distance(reference: str, hypothesis: str) -> int:
+    if len(reference) < len(hypothesis):
+        reference, hypothesis = hypothesis, reference
+    previous_row = list(range(len(hypothesis) + 1))
+    for i, ref_char in enumerate(reference, 1):
+        current_row = [i] + [0] * len(hypothesis)
+        for j, hyp_char in enumerate(hypothesis, 1):
+            current_row[j] = min(
+                previous_row[j] + 1,
+                current_row[j - 1] + 1,
+                previous_row[j - 1] + (ref_char != hyp_char),
+            )
+        previous_row = current_row
+    return previous_row[-1]
+
+
+def cer(reference: str, hypothesis: str) -> float:
+    """Return Character Error Rate as a fraction, after Unicode NFC normalization."""
+    reference_chars = normalize_for_evaluation(reference)
+    if not reference_chars:
+        return 0.0
+    return _levenshtein_distance(reference_chars, normalize_for_evaluation(hypothesis)) / len(reference_chars)
 
 
 def oiwer_alignment(

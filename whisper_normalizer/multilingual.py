@@ -30,22 +30,33 @@ from whisper_normalizer.indic import (
     TeluguNormalizer,
 )
 from whisper_normalizer.international import (
+    NUM2WORDS_SUPPORTED_LANGS,
     ArabicTextNormalizer,
     ChineseTextNormalizer,
     FrenchTextNormalizer,
     RussianTextNormalizer,
     SpanishTextNormalizer,
+    _digits_to_words,
+    _validate_tts_lang,
 )
 
 
 class MultilingualTextNormalizer:
     """Conservative, script-safe normalization for languages without bespoke rules."""
 
+    def __init__(self, lang: str = "", tts_mode: bool = False):
+        if tts_mode and lang:
+            _validate_tts_lang(lang)
+        self.lang = lang
+        self.tts_mode = tts_mode
+
     def __call__(self, text: str) -> str:
         text = unicodedata.normalize("NFC", text).lower()
         text = re.sub(r"[<\[][^>\]]*[>\]]", "", text)
         text = re.sub(r"\(([^)]+?)\)", "", text)
         text = text.replace("​", "").replace("﻿", "")
+        if self.tts_mode and self.lang:
+            text = _digits_to_words(text, self.lang)
         # Preserve Unicode marks: they carry meaning in scripts such as Arabic.
         text = regex.sub(r"[\p{P}\p{S}]+", " ", text)
         return re.sub(r"\s+", " ", text).strip()
@@ -73,6 +84,7 @@ class LanguageSupport:
 
 
 _GENERIC_CAPABILITIES = ("unicode", "punctuation", "whitespace", "case")
+_GENERIC_CAPABILITIES_TTS = _GENERIC_CAPABILITIES + ("tts_mode",)
 
 
 # Coverage matches the ~99 languages Whisper itself documents (openai/whisper
@@ -80,68 +92,68 @@ _GENERIC_CAPABILITIES = ("unicode", "punctuation", "whitespace", "case")
 # Odia, which is not one of Whisper's languages but already has a dedicated,
 # reviewed normalizer in this package.
 LANGUAGE_REGISTRY = {
-    "ar": LanguageSupport("ar", "Arabic", ArabicTextNormalizer, ('unicode', 'punctuation', 'numbers', 'digits'), "dedicated"),
+    "ar": LanguageSupport("ar", "Arabic", ArabicTextNormalizer, ('unicode', 'punctuation', 'numbers', 'digits', 'tts_mode'), "dedicated"),
     "bn": LanguageSupport("bn", "Bengali", BengaliNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "en": LanguageSupport("en", "English", EnglishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'spelling'), "dedicated"),
-    "es": LanguageSupport("es", "Spanish", SpanishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers'), "dedicated"),
-    "fr": LanguageSupport("fr", "French", FrenchTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers'), "dedicated"),
+    "es": LanguageSupport("es", "Spanish", SpanishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers', 'tts_mode'), "dedicated"),
+    "fr": LanguageSupport("fr", "French", FrenchTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers', 'tts_mode'), "dedicated"),
     "gu": LanguageSupport("gu", "Gujarati", GujaratiNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "hi": LanguageSupport("hi", "Hindi", HindiNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "kn": LanguageSupport("kn", "Kannada", KannadaNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "ml": LanguageSupport("ml", "Malayalam", MalayalamNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "or": LanguageSupport("or", "Odia", OdiaNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "pa": LanguageSupport("pa", "Punjabi", PunjabiNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
-    "ru": LanguageSupport("ru", "Russian", RussianTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers'), "dedicated"),
+    "ru": LanguageSupport("ru", "Russian", RussianTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers', 'tts_mode'), "dedicated"),
     "ta": LanguageSupport("ta", "Tamil", TamilNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "te": LanguageSupport("te", "Telugu", TeluguNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
     "zh": LanguageSupport("zh", "Chinese", ChineseTextNormalizer, ('unicode', 'punctuation', 'numbers', 'whitespace'), "dedicated"),
-    "as": LanguageSupport("as", "Assamese", functools.partial(BengaliNormalizer, lang="as", do_remap_assamese_chars=True), ('unicode', 'script'), "script"),
-    "mr": LanguageSupport("mr", "Marathi", functools.partial(DevanagariNormalizer, lang="mr"), ('unicode', 'script'), "script"),
+    "as": LanguageSupport("as", "Assamese", functools.partial(BengaliNormalizer, lang="as", do_remap_assamese_chars=True), ('unicode', 'script', 'numbers', 'tts_mode'), "script"),
+    "mr": LanguageSupport("mr", "Marathi", functools.partial(DevanagariNormalizer, lang="mr"), ('unicode', 'script', 'numbers', 'tts_mode'), "script"),
     "ne": LanguageSupport("ne", "Nepali", functools.partial(DevanagariNormalizer, lang="ne"), ('unicode', 'script'), "script"),
     "sa": LanguageSupport("sa", "Sanskrit", functools.partial(DevanagariNormalizer, lang="sa"), ('unicode', 'script'), "script"),
     "af": LanguageSupport("af", "Afrikaans", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "am": LanguageSupport("am", "Amharic", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "az": LanguageSupport("az", "Azerbaijani", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "am": LanguageSupport("am", "Amharic", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "az": LanguageSupport("az", "Azerbaijani", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "ba": LanguageSupport("ba", "Bashkir", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "be": LanguageSupport("be", "Belarusian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "be": LanguageSupport("be", "Belarusian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "bg": LanguageSupport("bg", "Bulgarian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "bo": LanguageSupport("bo", "Tibetan", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "br": LanguageSupport("br", "Breton", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "bs": LanguageSupport("bs", "Bosnian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "ca": LanguageSupport("ca", "Catalan", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "cs": LanguageSupport("cs", "Czech", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "cy": LanguageSupport("cy", "Welsh", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "da": LanguageSupport("da", "Danish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "de": LanguageSupport("de", "German", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "ca": LanguageSupport("ca", "Catalan", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "cs": LanguageSupport("cs", "Czech", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "cy": LanguageSupport("cy", "Welsh", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "da": LanguageSupport("da", "Danish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "de": LanguageSupport("de", "German", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "el": LanguageSupport("el", "Greek", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "et": LanguageSupport("et", "Estonian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "eu": LanguageSupport("eu", "Basque", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "fa": LanguageSupport("fa", "Persian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "fi": LanguageSupport("fi", "Finnish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "fa": LanguageSupport("fa", "Persian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "fi": LanguageSupport("fi", "Finnish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "fo": LanguageSupport("fo", "Faroese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "gl": LanguageSupport("gl", "Galician", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "ha": LanguageSupport("ha", "Hausa", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "haw": LanguageSupport("haw", "Hawaiian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "he": LanguageSupport("he", "Hebrew", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "he": LanguageSupport("he", "Hebrew", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "hr": LanguageSupport("hr", "Croatian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "ht": LanguageSupport("ht", "Haitian Creole", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "hu": LanguageSupport("hu", "Hungarian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "hu": LanguageSupport("hu", "Hungarian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "hy": LanguageSupport("hy", "Armenian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "id": LanguageSupport("id", "Indonesian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "is": LanguageSupport("is", "Icelandic", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "it": LanguageSupport("it", "Italian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "ja": LanguageSupport("ja", "Japanese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "id": LanguageSupport("id", "Indonesian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "is": LanguageSupport("is", "Icelandic", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "it": LanguageSupport("it", "Italian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "ja": LanguageSupport("ja", "Japanese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "jw": LanguageSupport("jw", "Javanese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "ka": LanguageSupport("ka", "Georgian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "kk": LanguageSupport("kk", "Kazakh", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "km": LanguageSupport("km", "Khmer", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "ko": LanguageSupport("ko", "Korean", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "ko": LanguageSupport("ko", "Korean", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "la": LanguageSupport("la", "Latin", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "lb": LanguageSupport("lb", "Luxembourgish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "ln": LanguageSupport("ln", "Lingala", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "lo": LanguageSupport("lo", "Lao", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "lt": LanguageSupport("lt", "Lithuanian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "lv": LanguageSupport("lv", "Latvian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "lt": LanguageSupport("lt", "Lithuanian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "lv": LanguageSupport("lv", "Latvian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "mg": LanguageSupport("mg", "Malagasy", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "mi": LanguageSupport("mi", "Maori", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "mk": LanguageSupport("mk", "Macedonian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
@@ -149,35 +161,35 @@ LANGUAGE_REGISTRY = {
     "ms": LanguageSupport("ms", "Malay", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "mt": LanguageSupport("mt", "Maltese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "my": LanguageSupport("my", "Myanmar", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "nl": LanguageSupport("nl", "Dutch", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "nl": LanguageSupport("nl", "Dutch", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "nn": LanguageSupport("nn", "Nynorsk", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "no": LanguageSupport("no", "Norwegian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "no": LanguageSupport("no", "Norwegian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "oc": LanguageSupport("oc", "Occitan", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "pl": LanguageSupport("pl", "Polish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "pl": LanguageSupport("pl", "Polish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "ps": LanguageSupport("ps", "Pashto", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "pt": LanguageSupport("pt", "Portuguese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "ro": LanguageSupport("ro", "Romanian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "pt": LanguageSupport("pt", "Portuguese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "ro": LanguageSupport("ro", "Romanian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "sd": LanguageSupport("sd", "Sindhi", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "si": LanguageSupport("si", "Sinhala", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "sk": LanguageSupport("sk", "Slovak", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "sl": LanguageSupport("sl", "Slovenian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "sk": LanguageSupport("sk", "Slovak", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "sl": LanguageSupport("sl", "Slovenian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "sn": LanguageSupport("sn", "Shona", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "so": LanguageSupport("so", "Somali", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "sq": LanguageSupport("sq", "Albanian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "sr": LanguageSupport("sr", "Serbian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "sr": LanguageSupport("sr", "Serbian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "su": LanguageSupport("su", "Sundanese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "sv": LanguageSupport("sv", "Swedish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "sv": LanguageSupport("sv", "Swedish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "sw": LanguageSupport("sw", "Swahili", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "tg": LanguageSupport("tg", "Tajik", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "th": LanguageSupport("th", "Thai", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "tg": LanguageSupport("tg", "Tajik", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
+    "th": LanguageSupport("th", "Thai", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "tk": LanguageSupport("tk", "Turkmen", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "tl": LanguageSupport("tl", "Tagalog", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "tr": LanguageSupport("tr", "Turkish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "tr": LanguageSupport("tr", "Turkish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "tt": LanguageSupport("tt", "Tatar", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "uk": LanguageSupport("uk", "Ukrainian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "uk": LanguageSupport("uk", "Ukrainian", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "ur": LanguageSupport("ur", "Urdu", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "uz": LanguageSupport("uz", "Uzbek", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
-    "vi": LanguageSupport("vi", "Vietnamese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
+    "vi": LanguageSupport("vi", "Vietnamese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES_TTS, "generic"),
     "yi": LanguageSupport("yi", "Yiddish", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "yo": LanguageSupport("yo", "Yoruba", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
     "yue": LanguageSupport("yue", "Cantonese", MultilingualTextNormalizer, _GENERIC_CAPABILITIES, "generic"),
@@ -335,10 +347,16 @@ def get_normalizer(language: str, **options) -> Callable[[str], str]:
         raise ValueError(
             f"{entry.name} normalizer does not support option(s): {', '.join(unsupported_options)}"
         )
-    return entry.factory(**options)
+    factory_kwargs = dict(options)
+    # Inject the resolved language code for factories that accept 'lang' but haven't pre-bound it.
+    already_bound = getattr(entry.factory, 'keywords', None) or {}
+    if 'lang' not in already_bound and _supports_option(entry.factory, 'lang'):
+        factory_kwargs.setdefault('lang', key)
+    return entry.factory(**factory_kwargs)
 
 
 def supported_languages() -> tuple[LanguageSupport, ...]:
     """Return the language registry in ISO-code order."""
 
     return tuple(LANGUAGE_REGISTRY[code] for code in sorted(LANGUAGE_REGISTRY))
+
