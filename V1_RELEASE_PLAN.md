@@ -49,7 +49,19 @@ whether `tts_mode` is available.
 ### In scope
 
 - English and `BasicTextNormalizer`.
-- Existing Indic normalizers, including their documented TTS support.
+- Existing Indic normalizers and their TTS support.
+- `tts_mode` for almost all supported languages:
+  - **Script-tier Indic** (Assamese, Marathi, Nepali, Sanskrit): expose `tts_mode` on
+    `DevanagariNormalizer` and the Assamese fork of `BengaliNormalizer`; propagate through
+    `functools.partial` registry entries.
+  - **Dedicated non-Indic** (Arabic, English, French, Spanish, Russian, Chinese): add
+    `tts_mode` to each normalizer class using `num2words` for number-to-words conversion.
+  - **Generic tier** (~70 languages): add `tts_mode` to `MultilingualTextNormalizer` via
+    `num2words`; raise `ValueError` for languages `num2words` does not support rather than
+    silently skipping.
+  - Update `'tts_mode'` in the `capabilities` tuple of all applicable `LANGUAGE_REGISTRY`
+    entries.
+  - Ship `num2words` as an optional dependency: `pip install whisper_normalizer[tts]`.
 - French, Spanish, Arabic, Chinese, and Russian normalizers.
 - Stable language selection, clear errors, regression tests, and release
   automation.
@@ -73,6 +85,25 @@ whether `tts_mode` is available.
 
 **Exit criteria:** one short quickstart can select every supported normalizer;
 unsupported input fails loudly and helpfully.
+
+### Milestone 1.5 — TTS mode for all supported languages
+
+1. Add `tts_mode` to `DevanagariNormalizer`; propagate to the `mr`, `ne`, `sa`, and `as`
+   registry entries via `functools.partial`.
+2. Add `tts_mode` to `ArabicTextNormalizer`, `EnglishTextNormalizer`, `FrenchTextNormalizer`,
+   `SpanishTextNormalizer`, `RussianTextNormalizer`, and `ChineseTextNormalizer` using
+   `num2words` for number-to-words conversion.
+3. Add `tts_mode` to `MultilingualTextNormalizer` with a `num2words` lookup keyed by BCP 47
+   language code; raise `ValueError` for languages `num2words` does not cover.
+4. Update `LANGUAGE_REGISTRY` capability tuples and `get_normalizer()` validation to
+   accept and forward `tts_mode` for all newly covered languages.
+5. Add `num2words` as an optional `[tts]` extra in `pyproject.toml`.
+6. Add regression tests: one `tts_mode=True` round-trip per normalizer class covering
+   numbers, currencies, and a symbol.
+
+**Exit criteria:** `get_normalizer(lang, tts_mode=True)` works for all languages with
+`num2words` coverage; requesting `tts_mode=True` for an unsupported language raises
+`ValueError` with a helpful message.
 
 ### Milestone 2 — make language behavior a promise
 
@@ -122,6 +153,8 @@ Ship 1.0.0 when all of the following are true:
   tag.
 - The changelog contains user-facing 1.0 release notes and a migration guide
   covers any breaking changes.
+- All languages backed by `num2words` accept `tts_mode=True` without error;
+  unsupported languages raise `ValueError`.
 
 ## Post-1.0 direction
 
@@ -141,15 +174,24 @@ The evaluation input schema should include `id`, `reference`, `hypothesis`, and
 preserve the raw and normalized text, evaluator version/configuration,
 per-utterance scores, aggregate scores, and evaluator explanations.
 
-The first integrations are:
+The metrics provided are:
 
-- **AI4Bharat OIWER**: call or wrap the upstream reference implementation;
-  do not duplicate its orthographic-variation logic.
-- **Sarvam LLM evaluation**: support LLM-WER/CER and, when context is
-  available, intent and entity preservation. This is an explicit opt-in call
-  because it needs credentials and may incur LLM cost.
+- **WER / CER**: standard Word Error Rate and Character Error Rate, both
+  implemented from scratch in `whisper_normalizer.evaluation` using the same
+  Levenshtein core.
+- **OIWER**: Orthographically-Informed WER implemented from scratch as
+  `oiwer` and `oiwer_alignment` in `whisper_normalizer.evaluation`. The
+  implementation attributes AI4Bharat's orthographic-variation format but does
+  not depend on or call the upstream library at
+  `github.com/AI4Bharat/OIWER-Orthographically-Informed-Benchmarking-for-ASR`.
+- **Sarvam-style LLM-WER/CER**: implemented from scratch as `llm_wer` in
+  `whisper_normalizer.evaluation`. The caller supplies a `judge` callable that
+  decides phonetic/semantic equivalence for non-exact aligned spans; the
+  library owns the alignment logic and error-rate formula. No dependency on
+  the upstream `sarvamai/llm_wer` repo. This is an explicit opt-in because
+  it requires credentials and may incur LLM cost.
 
 Reports should compare raw WER/CER, WER/CER after the selected normalizer,
-OIWER, and Sarvam results for the same utterances. CI uses fixtures and fake
-evaluators only; network calls, secrets, and paid evaluation are never release
-requirements.
+OIWER, and Sarvam LLM-WER results for the same utterances. CI uses fixtures
+and fake evaluators only; network calls, secrets, and paid evaluation are
+never release requirements.
