@@ -7,7 +7,7 @@ __all__ = ['NormalizerI', 'BaseNormalizer', 'DevanagariNormalizer', 'HindiNormal
 
 # %% ../nbs/1b.indic_normalizer.ipynb #cb6f2528-480a-4671-a52f-b8f33df5db30
 import re
-from indic_numtowords import num2words
+from indic_numtowords import num2words, supported_langs
 
 
 from . import langinfo
@@ -355,6 +355,7 @@ class DevanagariNormalizer(BaseNormalizer):
         nasals_mode="do_nothing",
         do_normalize_chandras=False,
         do_normalize_vowel_ending=False,
+        tts_mode=False,
     ):
         super(DevanagariNormalizer, self).__init__(
             lang,
@@ -363,6 +364,12 @@ class DevanagariNormalizer(BaseNormalizer):
             do_normalize_chandras,
             do_normalize_vowel_ending,
         )
+        if tts_mode and lang not in supported_langs:
+            raise ValueError(
+                f"tts_mode is not supported for DevanagariNormalizer with lang={lang!r}. "
+                f"Supported langs: {sorted(supported_langs)}"
+            )
+        self.tts_mode = tts_mode
 
     def __call__(self, text):
         # common normalization for Indic scripts
@@ -393,12 +400,19 @@ class DevanagariNormalizer(BaseNormalizer):
         # correct visarga
         text = re.sub(r"([\u0900-\u097f]):", "\\1\u0903", text)
 
+        if self.tts_mode:
+            text = re.sub(r"₹\s*(\d+)", r"रुपये \1", text)
+            text = re.sub(r"\$\s*(\d+)", r"डॉलर \1", text)
+            symbol_map = {"&": " and ", "%": " percent ", "+": " plus "}
+            for sym, word in symbol_map.items():
+                text = text.replace(sym, word)
+
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
-            # Extract parts containing digits
+            effective_lang = self.lang if self.lang in supported_langs else "hi"
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
-                text = text.replace(part, num2words(part, lang="hi"))
+                text = text.replace(part, num2words(part, lang=effective_lang))
 
         return text
 
@@ -1249,7 +1263,7 @@ class BengaliNormalizer(BaseNormalizer):
             do_normalize_vowel_ending,
         )
         self.do_remap_assamese_chars = do_remap_assamese_chars
-        self.tts_mode = True
+        self.tts_mode = tts_mode
 
     def __call__(self, text: str):
         # common normalization for Indic scripts
@@ -1369,9 +1383,10 @@ class BengaliNormalizer(BaseNormalizer):
 
         has_digits = any(char.isdigit() for char in text)
         if has_digits:
+            effective_lang = self.lang if self.lang in supported_langs else "bn"
             digit_parts = re.findall(r"\d+", text)
             for part in digit_parts:
-                text = text.replace(part, num2words(part, lang="bn"))
+                text = text.replace(part, num2words(part, lang=effective_lang))
 
         return text.lower()
 
