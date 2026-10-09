@@ -477,6 +477,9 @@ class EnglishSpellingNormalizer:
         return " ".join(self.mapping.get(word, word) for word in s.split())
 
 # %% ../nbs/01_english.ipynb #6528de7a
+_NUMBER = r"\d+(?:\.\d+)?"  # an integer or decimal number
+
+
 class EnglishTextNormalizer:
     """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper. As per the text normalization/standardization approach  Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `EnglishTextNormalizer` does the following functionality:
 
@@ -494,7 +497,21 @@ class EnglishTextNormalizer:
     10. Convert British spellings into American spellings.
     11. Remove remaining symbols that are not part of any numeric expressions.
     12. Replace any successive whitespace characters with a space.
+
+    With `tts_mode=True` (requires `pip install whisper_normalizer[tts]`) the text is prepared for speech
+    instead: step 9 is skipped so written numbers stay words, digits, currencies, percentages and decimals
+    are spelled out, and `&`, `+`, `=` and `@` are spoken as words.
     """
+
+    # (symbol) -> (major unit, major plural, minor unit, minor plural)
+    _CURRENCIES = {
+        "$": ("dollar", "dollars", "cent", "cents"),
+        "€": ("euro", "euros", "cent", "cents"),
+        "£": ("pound", "pounds", "penny", "pence"),
+    }
+
+    # Symbols spoken in tts_mode; they would otherwise be stripped as punctuation.
+    _TTS_SYMBOLS = {"&": " and ", "+": " plus ", "=": " equals ", "@": " at "}
 
     def __init__(self, tts_mode: bool = False):
         if tts_mode:
@@ -563,22 +580,13 @@ class EnglishTextNormalizer:
         self.standardize_numbers = EnglishNumberNormalizer()
         self.standardize_spellings = EnglishSpellingNormalizer()
 
-    # (symbol) -> (major unit, major plural, minor unit, minor plural)
-    _CURRENCIES = {
-        "$": ("dollar", "dollars", "cent", "cents"),
-        "€": ("euro", "euros", "cent", "cents"),
-        "£": ("pound", "pounds", "penny", "pence"),
-    }
-
-    # Symbols spoken in tts_mode; they would otherwise be stripped as punctuation.
-    _TTS_SYMBOLS = {"&": " and ", "+": " plus ", "=": " equals ", "@": " at "}
-
     def _spell(self, number: str) -> str:
-        """Spell a digit string; decimals are read digit by digit ("3.50" -> "three point five zero")."""
+        """Spell a digit string; decimals are read digit by digit."""
         nw = _num2words_module()
 
         def words(digits: str) -> str:
-            return nw.num2words(int(digits), lang="en").replace(",", "").replace("-", " ")
+            spoken = nw.num2words(int(digits), lang="en")
+            return spoken.replace(",", "").replace("-", " ")
 
         whole, point, fraction = number.partition(".")
         out = words(whole)
@@ -587,23 +595,30 @@ class EnglishTextNormalizer:
         return out
 
     def _speak_numbers(self, s: str) -> str:
-        """tts_mode: spell currencies and digits (including decimals) as English words."""
+        """tts_mode: spell currencies, percentages and digits as English words."""
 
         def money(match):
             one, many, minor_one, minor_many = self._CURRENCIES[match.group(1)]
-            whole, _, fraction = match.group(2).partition(".")
+            whole, _dot, fraction = match.group(2).partition(".")
             if len(fraction) > 2:  # not a price: read it as a plain decimal
                 return f"{self._spell(match.group(2))} {many}"
             out = f"{self._spell(whole)} {one if whole == '1' else many}"
             minor = int(fraction.ljust(2, "0")) if fraction else 0
             if minor:
-                out += f" {self._spell(str(minor))} {minor_one if minor == 1 else minor_many}"
+                unit = minor_one if minor == 1 else minor_many
+                out += f" {self._spell(str(minor))} {unit}"
             return out
 
-        s = re.sub(r"([$€£])\s*(\d+(?:\.\d+)?)", money, s)
-        s = re.sub(r"(\d+(?:\.\d+)?)\s*¢", lambda m: f"{self._spell(m.group(1))} {'cent' if m.group(1) == '1' else 'cents'}", s)
-        s = re.sub(r"(\d+(?:\.\d+)?)\s*%", lambda m: f"{self._spell(m.group(1))} percent", s)
-        return re.sub(r"\b\d+(?:\.\d+)?\b", lambda m: self._spell(m.group(0)), s)
+        def cents(match):
+            unit = "cent" if match.group(1) == "1" else "cents"
+            return f"{self._spell(match.group(1))} {unit}"
+
+        s = re.sub(rf"([$€£])\s*({_NUMBER})", money, s)
+        s = re.sub(rf"({_NUMBER})\s*¢", cents, s)
+        s = re.sub(
+            rf"({_NUMBER})\s*%", lambda m: f"{self._spell(m.group(1))} percent", s
+        )
+        return re.sub(rf"\b{_NUMBER}\b", lambda m: self._spell(m.group(0)), s)
 
     def __call__(self, s: str):
         s = s.lower()

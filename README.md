@@ -122,6 +122,8 @@ The logic for normalization in Indic languages is derived from [indic-nlp-librar
 
 ## TTS Mode for Indic Languages
 
+`tts_mode` is not Indic-only: English, French, Spanish, Arabic, Russian and many other languages support it too (it needs `pip install whisper_normalizer[tts]`); see the [capability table](#supported-languages-and-capabilities). This section describes the Indic behaviour.
+
 Several Indic normalizers support a `tts_mode=True` option that converts text into a form suitable for text-to-speech synthesis. When enabled, the normalizer will:
 
 - Convert currency symbols to spoken forms (₹100 → “रुपये एक सौ”, \$20 → “डॉलर बीस”)

@@ -10,7 +10,7 @@ __all__ = ['LANGUAGE_REGISTRY', 'LANGUAGE_ALIASES', 'MultilingualTextNormalizer'
 import functools
 import inspect
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Literal
 import re
 import unicodedata
 
@@ -83,10 +83,10 @@ class LanguageSupport:
     capabilities: tuple[str, ...]
     tier: str
     # "kept": combining marks survive normalization; "stripped": they are removed.
-    marks: str = "kept"
+    marks: Literal["kept", "stripped"] = "kept"
 
     @property
-    def digits_to_words(self) -> str:
+    def digits_to_words(self) -> Literal["always", "tts_mode", "never"]:
         """When digits are spelled as words: ``"always"``, ``"tts_mode"`` or ``"never"``.
 
         The Indic-family normalizers always spell digits; other languages do so
