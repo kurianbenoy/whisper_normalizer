@@ -64,16 +64,16 @@ jobs:
               result = subprocess.run([
                   python, '-c', '''
           import whisper_normalizer
-          from whisper_normalizer import get_normalizer, supported_languages
+          from whisper_normalizer import Normalizer, supported_languages
 
           # Test basic import
           print(f"Version: {whisper_normalizer.__version__}")
 
-          # Test factory API
-          norm = get_normalizer("en")
+          # Test selection API
+          norm = Normalizer("en")
           print(f"English: {norm('Hello WORLD!')}")
 
-          norm_hi = get_normalizer("hi", tts_mode=True)
+          norm_hi = Normalizer("hi", tts_mode=True)
           print(f"Hindi TTS: {norm_hi('नमस्ते ₹100')}")
 
           # Test supported_languages

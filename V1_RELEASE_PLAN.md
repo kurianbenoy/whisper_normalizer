@@ -26,9 +26,9 @@ This follows three design principles:
 Add a small, documented selection API as the recommended entry point:
 
 ```python
-from whisper_normalizer import get_normalizer
+from whisper_normalizer import Normalizer
 
-normalizer = get_normalizer("hi", tts_mode=True)
+normalizer = Normalizer("hi", tts_mode=True)  # or Normalizer.for_language("hi", ...)
 result = normalizer("...")
 ```
 
@@ -95,13 +95,13 @@ unsupported input fails loudly and helpfully.
    `num2words` for number-to-words conversion.
 3. Add `tts_mode` to `MultilingualTextNormalizer` with a `num2words` lookup keyed by BCP 47
    language code; raise `ValueError` for languages `num2words` does not cover.
-4. Update `LANGUAGE_REGISTRY` capability tuples and `get_normalizer()` validation to
+4. Update `LANGUAGE_REGISTRY` capability tuples and `Normalizer` validation to
    accept and forward `tts_mode` for all newly covered languages.
 5. Add `num2words` as an optional `[tts]` extra in `pyproject.toml`.
 6. Add regression tests: one `tts_mode=True` round-trip per normalizer class covering
    numbers, currencies, and a symbol.
 
-**Exit criteria:** `get_normalizer(lang, tts_mode=True)` works for all languages with
+**Exit criteria:** `Normalizer(lang, tts_mode=True)` works for all languages with
 `num2words` coverage; requesting `tts_mode=True` for an unsupported language raises
 `ValueError` with a helpful message.
 

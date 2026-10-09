@@ -123,10 +123,11 @@ The following Indic languages support `tts_mode`:
 ### Usage
 
 ``` python
-from whisper_normalizer import get_normalizer
+from whisper_normalizer import Normalizer
 
-# Get a normalizer with TTS mode enabled
-normalizer = get_normalizer("hi", tts_mode=True)
+# Pick a language; Normalizer.for_language("hi", tts_mode=True) is equivalent
+normalizer = Normalizer("hi", tts_mode=True)
+# Metadata: normalizer.language == "hi", .name == "Hindi", .tier == "dedicated"
 result = normalizer("नमस्ते ₹100 और $20.50")
 # Output: "नमस्ते रुपये एक सौ और डॉलर बीस पॉइंट पांच शून्य"
 ```
@@ -141,14 +142,14 @@ result = normalizer("Visit https://example.com or email user@example.com")
 # Output: "visit एच टी टी पी एस कोलन स्लैश स्लैश ई एक्स ए एम पी एल ई डॉट कॉम or यूजर एट एक्साम्पल डॉट कॉम"
 ```
 
-### Factory API Validation
+### Option validation
 
-The [`get_normalizer`](https://kurianbenoy.github.io/whisper_normalizer/multilingual.html#get_normalizer) factory validates options and raises `ValueError` if `tts_mode` is not supported:
+[`Normalizer`](https://kurianbenoy.github.io/whisper_normalizer/multilingual.html#normalizer) validates options and raises `ValueError` if the language does not support them, for example `tts_mode` for Nepali:
 
 ``` python
-from whisper_normalizer import get_normalizer
+from whisper_normalizer import Normalizer
 
-get_normalizer("en", tts_mode=True)  # Raises ValueError: English normalizer does not support option(s): tts_mode
+Normalizer("ne", tts_mode=True)  # Raises ValueError: tts_mode is not supported for DevanagariNormalizer with lang='ne'. ...
 ```
 
 ``` python

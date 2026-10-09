@@ -20,11 +20,11 @@ hand-edited. Configuration lives in `pyproject.toml` and `nbs/nbdev.yml`.
 | English | `english.py` | `EnglishTextNormalizer` + spelling map in `normalizers/english.json` |
 | Indic | `indic.py`, `langinfo.py` | `NormalizerI`/`BaseNormalizer` port of indic-nlp-library, 10 language subclasses, per-script offset arithmetic, TTS mode via `indic-numtowords` |
 | International | `international.py` | `_LatinTextNormalizer` (fr/es via `text2num`) and `_NonLatinTextNormalizer` (ar/zh/ru, optional `num2words`) |
-| Selection | `multilingual.py` | `LANGUAGE_REGISTRY` (102 languages), `LANGUAGE_ALIASES`, `LanguageSupport`, `get_normalizer()`, `supported_languages()` |
+| Selection | `multilingual.py` | `LANGUAGE_REGISTRY` (102 languages), `LANGUAGE_ALIASES`, `LanguageSupport`, `Normalizer`, `supported_languages()` |
 | Evaluation | `evaluation.py` | Self-contained WER/CER/OIWER/LLM-WER on one Levenshtein alignment core |
 
-`whisper_normalizer/__init__.py` exports `get_normalizer`,
-`supported_languages`, and `__version__`. Direct normalizer-class imports remain
+`whisper_normalizer/__init__.py` exports `Normalizer` (also spelled
+`Normalizer.for_language(...)`), `supported_languages`, and `__version__`. Direct normalizer-class imports remain
 supported as advanced APIs.
 
 ## Normalization pipeline
@@ -45,10 +45,11 @@ share nasal/chandra/vowel-ending logic across scripts.
 
 ## Design patterns
 
-- **Registry + factory.** `LANGUAGE_REGISTRY` maps ISO codes to a
-  `LanguageSupport` entry; `get_normalizer()` resolves BCP-47 tags, aliases, and
-  English names, validates options against the target factory, and returns a
-  fresh instance.
+- **Registry + `Normalizer`.** `LANGUAGE_REGISTRY` maps ISO codes to a
+  `LanguageSupport` entry; `Normalizer(language, **options)` resolves BCP-47
+  tags, aliases, and English names, validates options against the target
+  factory, and wraps a fresh language normalizer (available as
+  `.normalizer`) with `language`, `name`, `tier`, and `capabilities`.
 - **Tiering.** `dedicated` classes, `script` reuse via `functools.partial` (for
   example Marathi on `DevanagariNormalizer`), and `generic` conservative
   fallback. There is no silent language guessing.
@@ -88,10 +89,10 @@ Prioritized, highest impact first.
    `NUM2WORDS_SUPPORTED_LANGS`, and constructor checks are three hand-maintained
    lists that can drift. Declare capabilities on classes or validate them at
    import.
-4. **Types and lint.** Define a `Normalizer` protocol, type the registry and
-   factory, and add `ruff` plus `pyright`/`mypy`. Explicit metadata can replace
+4. **Types and lint.** Define a `TextNormalizer` protocol (a `str -> str` callable), type the
+   registry and factory, and add `ruff` plus `pyright`/`mypy`. Explicit metadata can replace
    the `inspect.signature`/`partial.keywords` introspection in
-   `get_normalizer()`.
+   `Normalizer`.
 5. **Release hygiene.** Version, tag, and changelog are manual and have
    drifted (tag `0.0.5` marks the 0.0.4 release; lone `v0.1.13` prefix). Add a
    CI check that the tag equals `__version__` and reconcile `main` with `new`
