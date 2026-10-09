@@ -595,19 +595,27 @@ class EnglishTextNormalizer:
         return out
 
     def _speak_numbers(self, s: str) -> str:
-        """tts_mode: spell currencies, percentages and digits as English words."""
+        """tts_mode: spell currencies, percentages, ordinals and digits as words."""
 
         def money(match):
             one, many, minor_one, minor_many = self._CURRENCIES[match.group(1)]
             whole, _dot, fraction = match.group(2).partition(".")
             if len(fraction) > 2:  # not a price: read it as a plain decimal
                 return f"{self._spell(match.group(2))} {many}"
-            out = f"{self._spell(whole)} {one if whole == '1' else many}"
             minor = int(fraction.ljust(2, "0")) if fraction else 0
+            spoken_minor = ""
             if minor:
                 unit = minor_one if minor == 1 else minor_many
-                out += f" {self._spell(str(minor))} {unit}"
-            return out
+                spoken_minor = f"{self._spell(str(minor))} {unit}"
+            if whole == "0" and minor:  # "$0.05" is just "five cents"
+                return spoken_minor
+            out = f"{self._spell(whole)} {one if whole == '1' else many}"
+            return f"{out} {spoken_minor}" if spoken_minor else out
+
+        def ordinal(match):
+            nw = _num2words_module()
+            spoken = nw.num2words(int(match.group(1)), lang="en", to="ordinal")
+            return spoken.replace(",", "").replace("-", " ")
 
         def cents(match):
             unit = "cent" if match.group(1) == "1" else "cents"
@@ -615,6 +623,7 @@ class EnglishTextNormalizer:
 
         s = re.sub(rf"([$€£])\s*({_NUMBER})", money, s)
         s = re.sub(rf"({_NUMBER})\s*¢", cents, s)
+        s = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", ordinal, s)
         s = re.sub(
             rf"({_NUMBER})\s*%", lambda m: f"{self._spell(m.group(1))} percent", s
         )
