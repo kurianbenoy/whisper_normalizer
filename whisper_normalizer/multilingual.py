@@ -372,8 +372,10 @@ def _build(entry: LanguageSupport, options: dict) -> Callable[[str], str]:
             f"{entry.name} normalizer does not support option(s): {', '.join(unsupported_options)}"
         )
     for name, value in options.items():
-        if isinstance(_option_default(entry.factory, name), bool) and not isinstance(value, bool):
-            raise TypeError(f"{name} must be a bool, got {type(value).__name__}: {value!r}")
+        default = _option_default(entry.factory, name)
+        if isinstance(default, bool) and not isinstance(value, bool):
+            kind = type(value).__name__
+            raise TypeError(f"{name} must be a bool, got {kind}: {value!r}")
     factory_kwargs = dict(options)
     # Inject the resolved language code for factories that accept 'lang' but haven't pre-bound it.
     already_bound = getattr(entry.factory, 'keywords', None) or {}
