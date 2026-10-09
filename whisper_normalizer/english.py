@@ -18,6 +18,7 @@ from importlib.resources import files
 from more_itertools import windowed
 
 from .basic import remove_symbols_and_diacritics
+from .international import _num2words_module, _validate_tts_lang
 
 
 class EnglishNumberNormalizer:
@@ -495,7 +496,10 @@ class EnglishTextNormalizer:
     12. Replace any successive whitespace characters with a space.
     """
 
-    def __init__(self):
+    def __init__(self, tts_mode: bool = False):
+        if tts_mode:
+            _validate_tts_lang("en")
+        self.tts_mode = tts_mode
         self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"
         self.replacers = {
             # common contractions
@@ -559,6 +563,48 @@ class EnglishTextNormalizer:
         self.standardize_numbers = EnglishNumberNormalizer()
         self.standardize_spellings = EnglishSpellingNormalizer()
 
+    # (symbol) -> (major unit, major plural, minor unit, minor plural)
+    _CURRENCIES = {
+        "$": ("dollar", "dollars", "cent", "cents"),
+        "€": ("euro", "euros", "cent", "cents"),
+        "£": ("pound", "pounds", "penny", "pence"),
+    }
+
+    # Symbols spoken in tts_mode; they would otherwise be stripped as punctuation.
+    _TTS_SYMBOLS = {"&": " and ", "+": " plus ", "=": " equals ", "@": " at "}
+
+    def _spell(self, number: str) -> str:
+        """Spell a digit string; decimals are read digit by digit ("3.50" -> "three point five zero")."""
+        nw = _num2words_module()
+
+        def words(digits: str) -> str:
+            return nw.num2words(int(digits), lang="en").replace(",", "").replace("-", " ")
+
+        whole, point, fraction = number.partition(".")
+        out = words(whole)
+        if point:
+            out += " point " + " ".join(words(d) for d in fraction)
+        return out
+
+    def _speak_numbers(self, s: str) -> str:
+        """tts_mode: spell currencies and digits (including decimals) as English words."""
+
+        def money(match):
+            one, many, minor_one, minor_many = self._CURRENCIES[match.group(1)]
+            whole, _, fraction = match.group(2).partition(".")
+            if len(fraction) > 2:  # not a price: read it as a plain decimal
+                return f"{self._spell(match.group(2))} {many}"
+            out = f"{self._spell(whole)} {one if whole == '1' else many}"
+            minor = int(fraction.ljust(2, "0")) if fraction else 0
+            if minor:
+                out += f" {self._spell(str(minor))} {minor_one if minor == 1 else minor_many}"
+            return out
+
+        s = re.sub(r"([$€£])\s*(\d+(?:\.\d+)?)", money, s)
+        s = re.sub(r"(\d+(?:\.\d+)?)\s*¢", lambda m: f"{self._spell(m.group(1))} {'cent' if m.group(1) == '1' else 'cents'}", s)
+        s = re.sub(r"(\d+(?:\.\d+)?)\s*%", lambda m: f"{self._spell(m.group(1))} percent", s)
+        return re.sub(r"\b\d+(?:\.\d+)?\b", lambda m: self._spell(m.group(0)), s)
+
     def __call__(self, s: str):
         s = s.lower()
 
@@ -570,11 +616,18 @@ class EnglishTextNormalizer:
         for pattern, replacement in self.replacers.items():
             s = re.sub(pattern, replacement, s)
 
+        if self.tts_mode:
+            for symbol, word in self._TTS_SYMBOLS.items():
+                s = s.replace(symbol, word)
+
         s = re.sub(r"(\d),(\d)", r"\1\2", s)  # remove commas between digits
         s = re.sub(r"\.([^0-9]|$)", r" \1", s)  # remove periods not followed by numbers
         s = remove_symbols_and_diacritics(s, keep=".%$¢€£")  # keep numeric symbols
 
-        s = self.standardize_numbers(s)
+        if self.tts_mode:
+            s = self._speak_numbers(s)
+        else:
+            s = self.standardize_numbers(s)
         s = self.standardize_spellings(s)
 
         # now remove prefix/suffix symbols that are not preceded/followed by numbers
