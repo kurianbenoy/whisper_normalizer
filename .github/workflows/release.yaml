@@ -21,7 +21,18 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --all-extras
-      - run: uv run python -m build --wheel --no-isolation
+      - name: Verify tag, package version and changelog agree
+        run: |
+          version=$(python - <<'PY'
+          import re
+          print(re.search(r'__version__ = "(.+?)"', open("whisper_normalizer/__init__.py").read()).group(1))
+          PY
+          )
+          if [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package version ${version}"; exit 1
+          fi
+          grep -q "^## ${version} - " CHANGELOG.md || { echo "CHANGELOG.md has no entry for ${version}"; exit 1; }
+      - run: uv run python -m build --no-isolation
       - run: uv run twine check dist/*
       - name: Clean-environment import test
         run: |

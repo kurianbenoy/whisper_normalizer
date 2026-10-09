@@ -1,5 +1,5 @@
-# Use Python 3.10 slim image for smaller size
-FROM python:3.10-slim
+# Use Python 3.11 slim image for smaller size (whisper_normalizer requires Python 3.11+)
+FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app

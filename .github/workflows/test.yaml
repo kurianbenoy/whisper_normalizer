@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Current nbdev releases require Python 3.10 or later.
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        # 3.11 is the oldest release still in security support (3.10 reached end of life on 2026-10-01).
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,7 +39,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --all-extras
-      - run: uv run python -m build --wheel --no-isolation
+      - run: uv run python -m build --no-isolation
       - run: uv run twine check dist/*
       - name: Clean-environment import test
         run: |

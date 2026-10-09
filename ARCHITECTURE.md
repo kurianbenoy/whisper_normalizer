@@ -64,8 +64,9 @@ share nasal/chandra/vowel-ending logic across scripts.
 - `pyproject.toml` uses setuptools with a dynamic version read from
   `whisper_normalizer.__version__`. Runtime dependencies: `more_itertools`,
   `regex`, `indic-numtowords`, `text2num`. Extras: `dev`, `tts`.
-- `test.yaml` runs `nbdev-test` on Python 3.10 and 3.13, builds a wheel, runs
-  `twine check`, and imports the wheel in a clean virtual environment.
+- `test.yaml` runs `nbdev-test` on Python 3.11 to 3.14, builds an sdist and a
+  wheel, runs `twine check`, and imports the wheel in a clean virtual
+  environment.
 - `release.yaml` runs on `v*` tags: build, GitHub Release, and PyPI trusted
   publishing.
 - `deploy.yaml` publishes the notebook docs.
@@ -98,8 +99,8 @@ Prioritized, highest impact first.
 6. **Lighten packaging.** Import `indic-numtowords` and `text2num` lazily and
    split extras (`[indic]`, `[international]`, `[tts]`). Cache
    `normalizers/english.json` once instead of reading it per instance.
-7. **Align CI with advertised support.** Classifiers claim Python 3.9–3.14 but
-   CI tests 3.10 and 3.13.
+7. **Align CI with advertised support.** Resolved: the package requires Python
+   3.11+ and CI tests 3.11 to 3.14.
 8. **Evaluation performance.** The Levenshtein core builds a full backtrace
    matrix; plain `wer`/`cer` only need distances. Keep alignment for
    `llm_wer`/`oiwer` and consider an optional `rapidfuzz` accelerator. The V1
