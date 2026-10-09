@@ -13,12 +13,12 @@ Use `uv` and the repository virtual environment:
 
 ```bash
 uv pip install --python .venv/bin/python -e .
-.venv/bin/nbdev_export   # regenerate whisper_normalizer/ from nbs/
-.venv/bin/nbdev_test     # execute notebook tests
+.venv/bin/nbdev-export   # regenerate whisper_normalizer/ from nbs/
+.venv/bin/nbdev-test     # execute notebook tests
 .venv/bin/python -m build --wheel --no-isolation
 ```
 
-Run `nbdev_export` after notebook changes and include the resulting generated-module changes in the same commit. The sample web app can be run from the repository root with `uvicorn app:app --app-dir examples/sample_webapp` after installing its requirements.
+Run `nbdev-export` after notebook changes and include the resulting generated-module changes in the same commit. The sample web app can be run from the repository root with `uvicorn app:app --app-dir examples/sample_webapp` after installing its requirements.
 
 ## Coding Style & Naming Conventions
 
@@ -26,7 +26,7 @@ Use four-space indentation, `snake_case` for functions and variables, and `Pasca
 
 ## Testing Guidelines
 
-Tests are notebook assertions, run by `nbdev_test`; add or update an assertion alongside every behavior change. Exercise affected language normalizers and both default and `tts_mode=True` where applicable. Before release, build a wheel and smoke-test package imports in a clean environment.
+Tests are notebook assertions, run by `nbdev-test`; add or update an assertion alongside every behavior change. Exercise affected language normalizers and both default and `tts_mode=True` where applicable. Before release, build a wheel and smoke-test package imports in a clean environment.
 
 ## Commit & Pull Request Guidelines
 
@@ -43,4 +43,18 @@ Recent history uses short, imperative subjects such as `update README`, `format 
 
 ## Security & Dependencies
 
-Report vulnerabilities through the process in `SECURITY.md`. Keep runtime dependencies in `settings.ini`; do not add generated environments, caches, or build artifacts to commits.
+Report vulnerabilities through the process in `SECURITY.md`. Keep runtime dependencies in `pyproject.toml`; do not add generated environments, caches, or build artifacts to commits.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues (`kurianbenoy/whisper_normalizer`), managed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
