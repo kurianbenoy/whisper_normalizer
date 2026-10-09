@@ -2,6 +2,36 @@
 
 <!-- do not remove -->
 
+## 1.0.0a1 - 2026-10-09
+
+First 1.0 alpha. It adds a stable language-selection API, many more languages, ASR evaluation metrics, and fixes several Indic normalization bugs.
+
+**Breaking changes**
+
+- Python 3.11 or later is now required. Python 3.9 and 3.10 have reached end of life.
+- Removed the obsolete `whisper_normalizer.core` module.
+
+**New**
+
+- Added `get_normalizer(language, **options)` and `supported_languages()` as the recommended entry point. `get_normalizer` accepts ISO codes, BCP-47 tags such as `hi-IN` and `zh-Hans`, and English language names. It raises a clear `ValueError` for an unsupported language and for any option the selected normalizer does not accept, such as `tts_mode`, and never falls back silently to a generic normalizer.
+- The registry covers 101 languages in three tiers (15 dedicated, 4 sharing a script normalizer, 82 conservative generic), with per-language capability metadata.
+- Added `tts_mode=True` for French, Spanish, Arabic, Chinese and Russian, for the generic tier (via `num2words`, installed with `pip install whisper_normalizer[tts]`), and for the Devanagari-based (Marathi, Nepali) and Assamese normalizers. Requesting `tts_mode` for a language `num2words` does not cover raises `ValueError`.
+- Added `whisper_normalizer.evaluation` with `wer`, `cer`, orthographically-informed WER (`oiwer`, `oiwer_alignment`) and caller-judged `llm_wer`. It runs offline with no API keys or extra dependencies.
+- Added a Python usage example script, `examples/hello_world_whisper_normalizer.py`.
+
+**Fixed**
+
+- Punjabi and Telugu `tts_mode`: `$20` is now spoken as a dollar amount; the dollar rule previously never matched.
+- Punjabi and Telugu colon-to-visarga correction replaced the preceding character with a control character; Punjabi `do_canonicalize_addak=True` had the same corruption.
+- All Indic normalizers: spelling digits as words rewrote digits inside other numbers, so `"1 10"` became `"एक एक0"`. Each number is now converted on its own.
+- Hindi and Punjabi raised `ValueError` on decimal numbers such as `"1.5"` in default mode. Each side of the dot is now spelled, for example `"एक.पाँच"`.
+- Fixed a `SyntaxWarning` from `BasicTextNormalizer` on newer Python versions.
+
+**Internal**
+
+- The nine Indic normalizers with `tts_mode` now share one pipeline for currencies, decimals, URLs, e-mail addresses, symbols and digit spelling, with each language supplying only its spoken words. Output is unchanged apart from the fixes above; per-language differences such as Hindi reading fractions digit by digit and Punjabi keeping Latin letter case are preserved.
+- Release builds now produce an sdist as well as a wheel, and the release workflow fails unless the tag, package version and changelog entry agree.
+
 ## 0.1.15 - 2026-07-26
 
 - Added text normalizers for French, Spanish, Arabic, Chinese, and Russian.
