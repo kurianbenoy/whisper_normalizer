@@ -355,6 +355,15 @@ def _resolve(language: str) -> LanguageSupport:
     return entry
 
 
+def _option_default(factory: Callable[..., Callable[[str], str]], option: str):
+    """Return the constructor default of ``option``, or ``None`` if it has none."""
+    try:
+        parameter = inspect.signature(factory).parameters.get(option)
+    except (TypeError, ValueError):
+        return None
+    return None if parameter is None else parameter.default
+
+
 def _build(entry: LanguageSupport, options: dict) -> Callable[[str], str]:
     """Create the language's normalizer, rejecting options it does not accept."""
     unsupported_options = sorted(name for name in options if not _supports_option(entry.factory, name))
@@ -362,6 +371,9 @@ def _build(entry: LanguageSupport, options: dict) -> Callable[[str], str]:
         raise ValueError(
             f"{entry.name} normalizer does not support option(s): {', '.join(unsupported_options)}"
         )
+    for name, value in options.items():
+        if isinstance(_option_default(entry.factory, name), bool) and not isinstance(value, bool):
+            raise TypeError(f"{name} must be a bool, got {type(value).__name__}: {value!r}")
     factory_kwargs = dict(options)
     # Inject the resolved language code for factories that accept 'lang' but haven't pre-bound it.
     already_bound = getattr(entry.factory, 'keywords', None) or {}
