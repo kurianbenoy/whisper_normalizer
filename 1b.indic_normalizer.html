@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Indic Languages Normalizer – whisper_normalizer</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f2788e636de456f6409e966386820849.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Indic Languages Normalizer – whisper_normalizer">
+<meta property="og:description" content="A python package for whisper normalizer">
+<meta property="og:site_name" content="whisper_normalizer">
+<meta name="twitter:title" content="Indic Languages Normalizer – whisper_normalizer">
+<meta name="twitter:description" content="A python package for whisper normalizer">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">whisper_normalizer</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1b.indic_normalizer.html">Indic Languages Normalizer</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">whisper_normalizer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WhisperNormalizer Base Module</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./english.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WhisperNormalizer English Module</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_international.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02_international.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Orthographically-informed ASR evaluation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multilingual.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multilingual normalizers\n\n&gt; A registry for conservative, language-aware text normalization.</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1a.langinfo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Indic NLP Langinfo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1b.indic_normalizer.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Indic Languages Normalizer</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#behaviour-tests-shared-tts-pipeline-across-indic-normalizers" id="toc-behaviour-tests-shared-tts-pipeline-across-indic-normalizers" class="nav-link active" data-scroll-target="#behaviour-tests-shared-tts-pipeline-across-indic-normalizers">Behaviour tests: shared TTS pipeline across Indic normalizers</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/kurianbenoy/whisper_normalizer/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Indic Languages Normalizer</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This code is from: https://github.com/anoopkunchukuttan/indic_nlp_library</p>
+<p>Also use Indic Numtowords: https://github.com/raj-sutariya/indic-num2words, https://github.com/AI4Bharat/indic-numtowords</p>
+<p>This code has been modified by Kurian to suit to Whisper-normalizer style of coding and the logic for Malayalam normalization is expanded beyond the Indic NLP library by Dr Kavya.</p>
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div id="28a1903f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.113905+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.135929+00:00&quot;,&quot;total&quot;:0.022028535000004013}}" data-execution_count="3">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L31" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="normalizeri" class="level3">
+<h3 class="anchored" data-anchor-id="normalizeri">NormalizerI</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> NormalizerI(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>args, <span class="op">**</span>kwargs</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>The normalizer classes do the following:</em> * Some characters have multiple Unicode codepoints. The normalizer chooses a single standard representation * Some control characters are deleted * While typing using the Latin keyboard, certain typical mistakes occur which are corrected by the module Base class for normalizer. Performs some common normalization, which includes: * Byte order mark, word joiner, etc. removal * ZERO_WIDTH_NON_JOINER and ZERO_WIDTH_JOINER removal * ZERO_WIDTH_SPACE and NO_BREAK_SPACE replaced by spaces Script specific normalizers should derive from this class and override the normalize() method. They can call the super class ’normalize() method to avail of the common normalization</p>
+</section>
+</div>
+<div id="0ce7183f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.139456+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.143467+00:00&quot;,&quot;total&quot;:0.0040139649999986204}}" data-execution_count="5">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L83" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="ttslexicon" class="level3">
+<h3 class="anchored" data-anchor-id="ttslexicon">TtsLexicon</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> TtsLexicon(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    rupee:<span class="bu">str</span>, dollar:<span class="bu">str</span>, won:<span class="bu">str</span>, point:<span class="bu">str</span>, http:<span class="bu">str</span>, https:<span class="bu">str</span>, dot:<span class="bu">str</span>, slash:<span class="bu">str</span>, at:<span class="bu">str</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    spell_fraction_digits:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>The spoken words a language contributes to <code>tts_mode</code>; the rewrite rules themselves are shared.</em></p>
+</section>
+</div>
+<div id="fb122a20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.166795+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.171591+00:00&quot;,&quot;total&quot;:0.004800256999999419}}" data-execution_count="7">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L112" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="basenormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="basenormalizer">BaseNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> BaseNormalizer(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    lang, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Common class used in most of indic languages inherit from this code.</em></p>
+</section>
+</div>
+<div id="a3be5dc0" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.178238+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.183312+00:00&quot;,&quot;total&quot;:0.005078368999988925}}" data-execution_count="9">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L475" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="devanagarinormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="devanagarinormalizer">DevanagariNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> DevanagariNormalizer(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'hi'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Devanagari script. In addition to basic normalization by the super class,</em> * Replaces the composite characters containing nuktas by their decomposed form * replace pipe character ‘|’ by poorna virama character * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="c1d77710-3178-45df-ab5c-811a34c0a331" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> DevanagariNormalizer()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>TEST_RESULT <span class="op">=</span> <span class="st">"चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>hi_text <span class="op">=</span> <span class="st">"चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>norm(hi_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर'</code></pre>
+</div>
+</div>
+<div id="2321c1c7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> norm(hi_text) <span class="op">==</span> TEST_RESULT</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="761e5d27" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sample_text <span class="op">=</span> <span class="st">"भारत का सकल घरेलू उत्पाद 1.5 ट्रिलियन अमेरिकी डॉलर है।"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>norm(sample_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'भारत का सकल घरेलू उत्पाद एक.पाँच ट्रिलियन अमेरिकी डॉलर है।'</code></pre>
+</div>
+</div>
+<div id="9c8aca02" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.188138+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.192809+00:00&quot;,&quot;total&quot;:0.004674452000003271}}" data-execution_count="11">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L567" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="hindinormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="hindinormalizer">HindiNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> HindiNormalizer(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'hi'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Fork of Devanagiri normalizer. With additional changes for Hindi and tts_mode.</em></p>
+</section>
+</div>
+<div id="dd63810f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> HindiNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>TEST_RESULT <span class="op">=</span> <span class="st">"चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hi_text <span class="op">=</span> <span class="st">"चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर $134.5"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>norm(hi_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर डॉलर एक सौ चौंतीस पॉइंट पाँच'</code></pre>
+</div>
+</div>
+<div id="5d649932" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>normalizer <span class="op">=</span> HindiNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> normalizer(<span class="st">"He spent Rs. 500 and $20 on groceries."</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>he spent रुपये पाँच सौ and डॉलर बीस on groceries.</code></pre>
+</div>
+</div>
+<div id="d1913ac4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>normalizer <span class="op">=</span> HindiNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> normalizer(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Visit https://example.com or mail us at help@support.in &amp; get 20</span><span class="sc">% o</span><span class="st">ff!"</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>visit एच टी टी पी एस कोलन स्लैश स्लैश e x a m p l e डॉट c o m or mail us at help at s u p p o r t डॉट i n  or  get बीस percent  off!</code></pre>
+</div>
+</div>
+<div id="3ade06f9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"आज की तारीख में भारत में ₹100 अमेरिका में $1.1855 के बराबर है alexerws@gmail.com"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>normalizer(text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'आज की तारीख में भारत में रुपये एक सौ अमेरिका में डॉलर एक पॉइंट एक आठ पाँच पाँच के बराबर है alexerws at g m a i l डॉट c o m'</code></pre>
+</div>
+</div>
+<div id="56d0015f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"प्रश्न 8 चे उत्तर 17.825 आहे."</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>normalizer(text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'प्रश्न आठ चे उत्तर सत्रह पॉइंट आठ दो पाँच आहे.'</code></pre>
+</div>
+</div>
+<div id="ccdd215d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>sample_text <span class="op">=</span> <span class="st">"भारत का सकल घरेलू उत्पाद 1.5 ट्रिलियन अमेरिकी डॉलर है।"</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>normalizer(sample_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'भारत का सकल घरेलू उत्पाद एक पॉइंट पाँच ट्रिलियन अमेरिकी डॉलर है।'</code></pre>
+</div>
+</div>
+<div id="2e5110f2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.199144+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.203988+00:00&quot;,&quot;total&quot;:0.004848156999997855}}" data-execution_count="13">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L637" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="punjabinormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="punjabinormalizer">PunjabiNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PunjabiNormalizer(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'pa'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_canonicalize_addak:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_canonicalize_tippi:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    do_replace_vowel_bases:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Gurmukhi script. In addition to basic normalization by the super class,</em> * Replaces the composite characters containing nuktas by their decomposed form * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * replace pipe character ‘|’ by poorna virama character * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="077cb1e9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>normalizer <span class="op">=</span> PunjabiNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>punjabi_text <span class="op">=</span> <span class="st">"ਪੰਜੀਵੀ ਜੀਡੀਪੀ 1.5 ਟ੍ਰੀਲੀਅਨ ਅਮਰੀਕਾ ਡੋਲਰ ਛੇ।"</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>normalizer(punjabi_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ਪੰਜੀਵੀ ਜੀਡੀਪੀ ਇੱਕ ਪੌਇੰਟ ਪੰਜ ਟ੍ਰੀਲੀਅਨ ਅਮਰੀਕਾ ਡੋਲਰ ਛੇ।'</code></pre>
+</div>
+</div>
+<div id="2332b715" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>punjabi_text <span class="op">=</span> (</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਦੁਨੀਆਂ। 4 ਮਈ, 2025 ਨੂੰ ਰਿਲੀਜ਼ ਹੋਏ ਪੰਜਾਬੀ ਨੋਰਮਲਾਈਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ।"</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>normalizer(punjabi_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਦੁਨੀਆਂ। ਚਾਰ ਮਈ, ਦੋ ਹਜ਼ਾਰ ਪੱਚੀ ਨੂੰ ਰਿਲੀਜ਼ ਹੋਏ ਪੰਜਾਬੀ ਨੋਰਮਲਾਈਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ।'</code></pre>
+</div>
+</div>
+<div id="93eb5fb9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.207178+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.211620+00:00&quot;,&quot;total&quot;:0.00444479200000103}}" data-execution_count="15">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L766" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="telugunormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="telugunormalizer">TeluguNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> TeluguNormalizer(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'te'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Teluguscript. In addition to basic normalization by the super class,</em> * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * canonicalize two-part dependent vowel signs * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="f01b055a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> TeluguNormalizer()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>te_text <span class="op">=</span> <span class="st">"భారతదేశ జీడీపీ 1.5 ట్రిలియన్ అమెరికా డాలర్లు."</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>norm(te_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'భారతదేశ జీడీపీ ఒకటి.ఐదు ట్రిలియన్ అమెరికా డాలర్లు.'</code></pre>
+</div>
+</div>
+<div id="3917bff6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> TeluguNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>norm(te_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'భారతదేశ జీడీపీ ఒకటి పాయింట్ ఐదు ట్రిలియన్ అమెరికా డాలర్లు.'</code></pre>
+</div>
+</div>
+<div id="b78f1cf6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.214847+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.219305+00:00&quot;,&quot;total&quot;:0.004462935999995921}}" data-execution_count="17">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L824" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="gujaratinormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="gujaratinormalizer">GujaratiNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> GujaratiNormalizer(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'gu'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Gujarati script. In addition to basic normalization by the super class,</em> * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="0cf3c434" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> GujaratiNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>gujarati_text <span class="op">=</span> <span class="st">"ભારતનો જીડીપી 1.5 ટ્રિલિયન અમેરિકન ડોલર છે."</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>norm(gujarati_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ભારતનો જીડીપી એક પોઈન્ટ પાંચ ટ્રિલિયન અમેરિકન ડોલર છે.'</code></pre>
+</div>
+</div>
+<div id="b9a5393b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.223963+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.228633+00:00&quot;,&quot;total&quot;:0.004672778999989191}}" data-execution_count="19">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L884" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="odianormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="odianormalizer">OdiaNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> OdiaNormalizer(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'or'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_remap_wa:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Oriya script. In addition to basic normalization by the super class,</em> * Replaces the composite characters containing nuktas by their decomposed form * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * Canonicalize two part dependent vowels * Replace ‘va’ with ‘ba’ * replace pipe character ‘|’ by poorna virama character * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="003a1249" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> OdiaNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>odia_text <span class="op">=</span> <span class="st">"ଭାରତର ଜିଡିପି 1.5 ଟ୍ରିଲିଅନ୍ ଆମେରିକୀୟ ଡଲାର ଅଟେ।"</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>norm(odia_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ଭାରତର ଜିଡିପି ଏକ ପଏଣ୍ଟ ପାଞ୍ଚ ଟ୍ରିଲିଅନ୍ ଆମେରିକୀୟ ଡଲାର ଅଟେ।'</code></pre>
+</div>
+</div>
+<div id="aba5b994" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.232905+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.237488+00:00&quot;,&quot;total&quot;:0.0045873290000031375}}" data-execution_count="21">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L986" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="bengalinormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="bengalinormalizer">BengaliNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> BengaliNormalizer(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'bn'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_remap_assamese_chars:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Bengali script. In addition to basic normalization by the super class,</em> * Replaces the composite characters containing nuktas by their decomposed form * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * Canonicalize two part dependent vowels * replace pipe character ‘|’ by poorna virama character * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="c49a21ae" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> BengaliNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>TEST_RESULT <span class="op">=</span> <span class="st">"ভারতের জিডিপি ১.৫ ট্রিলিয়ন মার্কিন ডলার।"</span>  <span class="co"># Claude generated output</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>bn_text <span class="op">=</span> <span class="st">"ভারতের জিডিপি 1.5 ট্রিলিয়ন মার্কিন ডলার।"</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>norm(bn_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ভারতের জিডিপি এক পয়েন্ট পাঁচ ট্রিলিয়ন মার্কিন ডলার।'</code></pre>
+</div>
+</div>
+<div id="b1e9a3d4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression test: tts_mode=False must not apply TTS-only substitutions.</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co"># BengaliNormalizer used to ignore the tts_mode constructor argument and always</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># behaved as though tts_mode=True; this pins the fix.</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>default_norm <span class="op">=</span> BengaliNormalizer()</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> default_norm.tts_mode <span class="kw">is</span> <span class="va">False</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>default_result <span class="op">=</span> default_norm(<span class="st">"Price is $100"</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"$"</span> <span class="kw">in</span> default_result <span class="kw">and</span> <span class="st">"ডলার"</span> <span class="kw">not</span> <span class="kw">in</span> default_result</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>tts_result <span class="op">=</span> BengaliNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"Price is $100"</span>)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"ডলার"</span> <span class="kw">in</span> tts_result <span class="kw">and</span> <span class="st">"$"</span> <span class="kw">not</span> <span class="kw">in</span> tts_result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="4aca8f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.241208+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.245605+00:00&quot;,&quot;total&quot;:0.0043998880000089}}" data-execution_count="23">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L1068" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="tamilnormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="tamilnormalizer">TamilNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> TamilNormalizer(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'ta'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Tamil script. In addition to basic normalization by the super class,</em> * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * canonicalize two-part dependent vowel signs * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="0de91fd8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> TamilNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>ta_text <span class="op">=</span> <span class="st">"இந்தியாவின் மொத்த உள்நாட்டு உற்பத்தி 1.5 டிரில்லியன் அமெரிக்க டாலர்."</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>norm(ta_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'இந்தியாவின் மொத்த உள்நாட்டு உற்பத்தி ஒன்று பாயிண்ட் ஐந்து டிரில்லியன் அமெரிக்க டாலர்.'</code></pre>
+</div>
+</div>
+<div id="b63f64e1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> TamilNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>ta_text <span class="op">=</span> <span class="st">"அவர் Rs. 500 மற்றும் $20 க்கு உணவுப்பொருட்கள் வாங்கினார். இணையதளம்: www.amazon.in."</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>norm(ta_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'அவர் ரூபாய் ஐநூறு மற்றும் டாலர் இருபது க்கு உணவுப்பொருட்கள் வாங்கினார். இணையதளம்ஃ w w w டாட் a m a z o n டாட் i n.'</code></pre>
+</div>
+</div>
+<div id="10f9c27e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.248813+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.251572+00:00&quot;,&quot;total&quot;:0.0027615609999998014}}" data-execution_count="25">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L1129" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="kannadanormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="kannadanormalizer">KannadaNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> KannadaNormalizer(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'kn'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Kannada script. In addition to basic normalization by the super class,</em> * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * canonicalize two-part dependent vowel signs * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<div id="2b2462b2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> KannadaNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>kannada_text <span class="op">=</span> <span class="st">"ಭಾರತದ ಜಿಡಿಪಿ 1.5 ಟ್ರಿಲಿಯನ್ ಅಮೇರಿಕನ್ ಡಾಲರ್ ಆಗಿದೆ."</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>norm(kannada_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ಭಾರತದ ಜಿಡಿಪಿ ಒಂದು ಪಾಯಿಂಟ್ ಐದು ಟ್ರಿಲಿಯನ್ ಅಮೇರಿಕನ್ ಡಾಲರ್ ಆಗಿದೆ.'</code></pre>
+</div>
+</div>
+<div id="25fa73e7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T12:43:38.254613+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T12:43:38.257466+00:00&quot;,&quot;total&quot;:0.0028554359999901635}}" data-execution_count="27">
+<hr>
+<p><a href="https://github.com/kurianbenoy/whisper_normalizer/blob/main/whisper_normalizer/indic.py#L1191" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="malayalamnormalizer" class="level3">
+<h3 class="anchored" data-anchor-id="malayalamnormalizer">MalayalamNormalizer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MalayalamNormalizer(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    lang:<span class="bu">str</span><span class="op">=</span><span class="st">'ml'</span>, remove_nuktas:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, nasals_mode:<span class="bu">str</span><span class="op">=</span><span class="st">'do_nothing'</span>, do_normalize_chandras:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    do_normalize_vowel_ending:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_canonicalize_chillus:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, do_correct_geminated_T:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    tts_mode:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Normalizer for the Malayalam script. In addition to basic normalization by the super class,</em> * Replace the reserved character for poorna virama (if used) with the recommended generic Indic scripts poorna virama * canonicalize two-part dependent vowel signs * Change from old encoding of chillus (till Unicode 5.0) to new encoding * replace colon ‘:’ by visarga if the colon follows a charcter in this script</p>
+</section>
+</div>
+<section id="tests" class="level4">
+<h4 class="anchored" data-anchor-id="tests">Tests</h4>
+<div id="c00e4a2a-8a3c-45f9-b5ab-665efe1df5ae" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>normalizer <span class="op">=</span> MalayalamNormalizer()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ae4425f1-a510-4af0-8b19-6127bf3e281a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>TEST_RESULT <span class="op">=</span> <span class="st">"എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ."</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>text_result <span class="op">=</span> normalizer(<span class="st">"എന്റെ കമ്പ്യൂട്ടറിനു് എന്റെ ഭാഷ."</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> text_result <span class="op">==</span> TEST_RESULT</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1290e0cd-5d59-4a2b-ae4b-f7af8e0c6aa2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>TESTCASE_RESULT <span class="op">=</span> <span class="st">"യുപിഎ ഭരണകാലത്തെ സാമ്പത്തിക വീഴ്ച; ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ.</span><span class="ch">\n\n</span><span class="st">യുപിഎ സർക്കാരിന്റെ കാലത്തെ ധനവിനിയോഗത്തിലെ വീഴ്ചകൾ വ്യക്തമാക്കുന്ന ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ തീരുമാനം. ബജറ്റ് സമ്മേളനം ഇതിനായി ഒരു ദിവസം കൂടി നീട്ടും. വിഹിതങ്ങൾ എപ്രകാരം തെറ്റായി വിനിയോഗിക്കപ്പെട്ടു എന്നതുൾപ്പെടെയുള്ള കാര്യങ്ങൾ വിശദീകരിക്കാനാണ് കേന്ദ്രസർക്കാർ നീക്കം.</span><span class="ch">\n\n</span><span class="st">"</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>text_result <span class="op">=</span> normalizer(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"""യുപിഎ ഭരണകാലത്തെ സാമ്പത്തിക വീഴ്ച; ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ.</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="st">യുപിഎ സർക്കാരിന്റെ കാലത്തെ ധനവിനിയോഗത്തിലെ വീഴ്ചകൾ വ്യക്തമാക്കുന്ന ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ തീരുമാനം. ബജറ്റ് സമ്മേളനം ഇതിനായി ഒരു ദിവസം കൂടി നീട്ടും. വിഹിതങ്ങൾ എപ്രകാരം തെറ്റായി വിനിയോഗിക്കപ്പെട്ടു എന്നതുൾപ്പെടെയുള്ള കാര്യങ്ങൾ വിശദീകരിക്കാനാണ് കേന്ദ്രസർക്കാർ നീക്കം.</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>text_result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'യുപിഎ ഭരണകാലത്തെ സാമ്പത്തിക വീഴ്ച; ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ.\n\nയുപിഎ സർക്കാരിന്റെ കാലത്തെ ധനവിനിയോഗത്തിലെ വീഴ്ചകൾ വ്യക്തമാക്കുന്ന ധവളപത്രം ഇറക്കാൻ കേന്ദ്രസർക്കാർ തീരുമാനം. ബജറ്റ് സമ്മേളനം ഇതിനായി ഒരു ദിവസം കൂടി നീട്ടും. വിഹിതങ്ങൾ എപ്രകാരം തെറ്റായി വിനിയോഗിക്കപ്പെട്ടു എന്നതുൾപ്പെടെയുള്ള കാര്യങ്ങൾ വിശദീകരിക്കാനാണ് കേന്ദ്രസർക്കാർ നീക്കം.\n\n'</code></pre>
+</div>
+</div>
+<div id="e8e82960" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> text_result <span class="op">==</span> TESTCASE_RESULT</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="7f2be537" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>normalizer <span class="op">=</span> MalayalamNormalizer(tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>malaylam_text <span class="op">=</span> <span class="st">"ഇന്ത്യയുടെ ജിഡിപി 1.5 ട്രില്യൺ യുഎസ് ഡോളറാണ്."</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>TESTCASE_RESULT <span class="op">=</span> <span class="st">"ഇന്ത്യയുടെ ജിഡിപി ഒന്ന് പോയിന്റ് അഞ്ച് ട്രില്യൺ യുഎസ് ഡോളറാണ്."</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>text_result <span class="op">=</span> normalizer(malaylam_text)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>text_result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ഇന്ത്യയുടെ ജിഡിപി ഒന്ന് പോയിന്റ് അഞ്ച് ട്രില്യൺ യുഎസ് ഡോളറാണ്.'</code></pre>
+</div>
+</div>
+<div id="93e66c10" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> text_result <span class="op">==</span> TESTCASE_RESULT</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="05f8377c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>TESTCASE_RESULT <span class="op">=</span> <span class="st">"ദുഃഖം"</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>text_result <span class="op">=</span> normalizer(<span class="st">"ദു:ഖം"</span>)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>text_result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ദുഃഖം'</code></pre>
+</div>
+</div>
+<div id="d652c9ce" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> text_result <span class="op">==</span> TESTCASE_RESULT</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="bb31a21d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>TESTCASE_RESULT <span class="op">=</span> <span class="st">"എന്റെ"</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>text_result <span class="op">=</span> normalizer(<span class="st">"എൻറെ"</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>text_result</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Still fails</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'എൻറെ'</code></pre>
+</div>
+</div>
+<div id="67fc0f6d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>normalizer(</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1000 രൂപ കൊടുത്തു. അയാൾ 500 ഡോളറിനും 20 ഡോളറിനും പലചരക്ക് സാധനങ്ങൾ വാങ്ങി. വെബ്സൈറ്റ്: www.amazon.in."</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ആയിരം രൂപ കൊടുത്തു. അയാൾ അഞ്ഞൂറ് ഡോളറിനും ഇരുപത് ഡോളറിനും പലചരക്ക് സാധനങ്ങൾ വാങ്ങി. വെബ്സൈറ്റ്ഃ w w w ഡോട്ട് a m a z o n ഡോട്ട് i n.'</code></pre>
+</div>
+</div>
+<div id="584b07d0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># TESTCASE_RESULT  = "കാണ്മാനില്ല"</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="co"># text_result = normalizer("കാണ്മാനില്ല")</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="co"># text_result</span></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Still fails</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="behaviour-tests-shared-tts-pipeline-across-indic-normalizers" class="level3">
+<h3 class="anchored" data-anchor-id="behaviour-tests-shared-tts-pipeline-across-indic-normalizers">Behaviour tests: shared TTS pipeline across Indic normalizers</h3>
+<p>These tests drive the deepening of the Indic normalizers (one shared TTS/digit pipeline, per-language data). They only use the public interface: <code>XNormalizer(tts_mode=...)(text) -&gt; str</code>. Expected values are literals or come from <code>indic_numtowords</code> (an independent oracle for numerals), never from recomputing the normalizer’s own logic.</p>
+<div id="d669ad04" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Per-language spoken words (literals) used as the expected values in the tests below.</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>INDIC_TTS <span class="op">=</span> {</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hi"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>HindiNormalizer, rupee<span class="op">=</span><span class="st">"रुपये"</span>, dollar<span class="op">=</span><span class="st">"डॉलर"</span>, won<span class="op">=</span><span class="st">"कोरियाई वॉन"</span>, dot<span class="op">=</span><span class="st">"डॉट"</span>, at<span class="op">=</span><span class="st">"एट"</span>),</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pa"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>PunjabiNormalizer, rupee<span class="op">=</span><span class="st">"ਰੁਪਏ"</span>, dollar<span class="op">=</span><span class="st">"ਡਾਲਰ"</span>, won<span class="op">=</span><span class="st">"ਕੋਰੀਆਈ ਵੌਨ"</span>, dot<span class="op">=</span><span class="st">"ਡਾਟ"</span>, at<span class="op">=</span><span class="st">"ਐਟ"</span>),</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"te"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>TeluguNormalizer, rupee<span class="op">=</span><span class="st">"రూపాయలు"</span>, dollar<span class="op">=</span><span class="st">"డాలర్లు"</span>, won<span class="op">=</span><span class="st">"కొరియన్ వాన్"</span>, dot<span class="op">=</span><span class="st">"డాట్"</span>, at<span class="op">=</span><span class="st">"అట్"</span>),</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gu"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>GujaratiNormalizer, rupee<span class="op">=</span><span class="st">"રૂપિયા"</span>, dollar<span class="op">=</span><span class="st">"ડોલર"</span>, won<span class="op">=</span><span class="st">"કોરિયન વોન"</span>, dot<span class="op">=</span><span class="st">"ડોટ"</span>, at<span class="op">=</span><span class="st">"એટ"</span>),</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"or"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>OdiaNormalizer, rupee<span class="op">=</span><span class="st">"ଟଙ୍କା"</span>, dollar<span class="op">=</span><span class="st">"ଡଲାର"</span>, won<span class="op">=</span><span class="st">"କୋରିଆନ୍ ୱନ୍"</span>, dot<span class="op">=</span><span class="st">"ଡଟ୍"</span>, at<span class="op">=</span><span class="st">"ଏଟ୍"</span>),</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bn"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>BengaliNormalizer, rupee<span class="op">=</span><span class="st">"রুপি"</span>, dollar<span class="op">=</span><span class="st">"ডলার"</span>, won<span class="op">=</span><span class="st">"কোরিয়ান ওন"</span>, dot<span class="op">=</span><span class="st">"ডট"</span>, at<span class="op">=</span><span class="st">"অ্যাট"</span>),</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ta"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>TamilNormalizer, rupee<span class="op">=</span><span class="st">"ரூபாய்"</span>, dollar<span class="op">=</span><span class="st">"டாலர்"</span>, won<span class="op">=</span><span class="st">"கொரிய வான்"</span>, dot<span class="op">=</span><span class="st">"டாட்"</span>, at<span class="op">=</span><span class="st">"அட்"</span>),</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"kn"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>KannadaNormalizer, rupee<span class="op">=</span><span class="st">"ರೂಪಾಯಿ"</span>, dollar<span class="op">=</span><span class="st">"ಡಾಲರ್"</span>, won<span class="op">=</span><span class="st">"ಕೊರಿಯನ್ ವಾನ್"</span>, dot<span class="op">=</span><span class="st">"ಡಾಟ್"</span>, at<span class="op">=</span><span class="st">"ಅಟ್"</span>),</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ml"</span>: <span class="bu">dict</span>(cls<span class="op">=</span>MalayalamNormalizer, rupee<span class="op">=</span><span class="st">"രൂപ"</span>, dollar<span class="op">=</span><span class="st">"ഡോളർ"</span>, won<span class="op">=</span><span class="st">"കൊറിയൻ വോൺ"</span>, dot<span class="op">=</span><span class="st">"ഡോട്ട്"</span>, at<span class="op">=</span><span class="st">"അറ്റ്"</span>),</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> spoken(code, number):</span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> num2words(<span class="bu">str</span>(number), lang<span class="op">=</span>code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="c8be8454" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode: a dollar sign before a number is spoken as the language's word for dollar.</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"$20"</span>)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>spec[<span class="st">'dollar'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(code, <span class="dv">20</span>)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out <span class="op">!=</span> expected:</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>        bad[code] <span class="op">=</span> (out, expected)</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e7014378" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A colon after a character of the script becomes that script's visarga; the character itself is kept.</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Unicode block bases are fixed by the standard: consonant KA = base+0x15, vowel sign I = base+0x3F, visarga = base+0x03.</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>BLOCK_BASE <span class="op">=</span> {<span class="st">"hi"</span>: <span class="bn">0x0900</span>, <span class="st">"bn"</span>: <span class="bn">0x0980</span>, <span class="st">"pa"</span>: <span class="bn">0x0A00</span>, <span class="st">"gu"</span>: <span class="bn">0x0A80</span>, <span class="st">"or"</span>: <span class="bn">0x0B00</span>,</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"ta"</span>: <span class="bn">0x0B80</span>, <span class="st">"te"</span>: <span class="bn">0x0C00</span>, <span class="st">"kn"</span>: <span class="bn">0x0C80</span>, <span class="st">"ml"</span>: <span class="bn">0x0D00</span>}</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>    base <span class="op">=</span> BLOCK_BASE[code]</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>    word <span class="op">=</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x15</span>) <span class="op">+</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x3F</span>)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> spec[<span class="st">"cls"</span>]()(word <span class="op">+</span> <span class="st">":"</span>)</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> word <span class="op">+</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x03</span>)</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out <span class="op">!=</span> expected:</span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>        bad[code] <span class="op">=</span> (out, expected)</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="188159e4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A colon that does not follow a character of the script is left alone.</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {code: out <span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items() <span class="cf">if</span> (out <span class="op">:=</span> spec[<span class="st">"cls"</span>]()(<span class="st">"ok:"</span>)) <span class="op">!=</span> <span class="st">"ok:"</span>}</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="97d9f640" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Punjabi: addak + consonant is canonicalized to consonant + halant + consonant (addak is U+0A71).</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> PunjabiNormalizer(do_canonicalize_addak<span class="op">=</span><span class="va">True</span>)(<span class="st">"</span><span class="ch">\u0a05\u0a71\u0a17</span><span class="st">"</span>)</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> out <span class="op">==</span> <span class="st">"</span><span class="ch">\u0a05\u0a17\u0a4d\u0a17</span><span class="st">"</span>, out</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="co"># The rule is opt-in.</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> PunjabiNormalizer()(<span class="st">"</span><span class="ch">\u0a05\u0a71\u0a17</span><span class="st">"</span>) <span class="op">==</span> <span class="st">"</span><span class="ch">\u0a05\u0a71\u0a17</span><span class="st">"</span></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Punjabi: tippi (U+0A70) is canonicalized to bindi (U+0A02) when requested.</span></span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> PunjabiNormalizer(do_canonicalize_tippi<span class="op">=</span><span class="va">True</span>)(<span class="st">"</span><span class="ch">\u0a05\u0a70\u0a17</span><span class="st">"</span>) <span class="op">==</span> <span class="st">"</span><span class="ch">\u0a05\u0a02\u0a17</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="d9da826a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>POINT <span class="op">=</span> {<span class="st">"hi"</span>: <span class="st">"पॉइंट"</span>, <span class="st">"pa"</span>: <span class="st">"ਪੌਇੰਟ"</span>, <span class="st">"te"</span>: <span class="st">"పాయింట్"</span>, <span class="st">"gu"</span>: <span class="st">"પોઈન્ટ"</span>, <span class="st">"or"</span>: <span class="st">"ପଏଣ୍ଟ"</span>,</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>         <span class="st">"bn"</span>: <span class="st">"পয়েন্ট"</span>, <span class="st">"ta"</span>: <span class="st">"பாயிண்ட்"</span>, <span class="st">"kn"</span>: <span class="st">"ಪಾಯಿಂಟ್"</span>, <span class="st">"ml"</span>: <span class="st">"പോയിന്റ്"</span>}</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mismatches(make_case):</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Run make_case(code, spec) -&gt; (got_thunk, expected) for every language; return {code: got-or-exception} for failures."""</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>    bad <span class="op">=</span> {}</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>        got, expected <span class="op">=</span> make_case(code, spec)</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>            value <span class="op">=</span> got()</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:  <span class="co"># a crash is a failure to report, not to hide</span></span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>            bad[code] <span class="op">=</span> <span class="ss">f"raised </span><span class="sc">{</span><span class="bu">type</span>(e)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> value <span class="op">!=</span> expected:</span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>            bad[code] <span class="op">=</span> (value, expected)</span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="4966d9a1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Digits are spelled as words, and each number is replaced on its own: a "1" must not rewrite the "1" inside "10".</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>]()(<span class="st">"1 10"</span>), <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">1</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(code, <span class="dv">10</span>)<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="569dcad6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Default mode: a decimal number must not crash; each side of the dot is spelled and the dot is kept.</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>]()(<span class="st">"1.5"</span>), <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">1</span>)<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>spoken(code, <span class="dv">5</span>)<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2c800d0e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode: a decimal is spoken as &lt;whole&gt; &lt;point-word&gt; &lt;fraction&gt;.</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"1.5"</span>), <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">1</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>POINT[code]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(code, <span class="dv">5</span>)<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Multi-digit fraction (existing behaviour, pinned): Hindi reads the fraction digit by digit; the other languages read it as one number.</span></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fraction_expected(code):</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>    frac <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">2</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(code, <span class="dv">5</span>)<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> code <span class="op">==</span> <span class="st">"hi"</span> <span class="cf">else</span> spoken(code, <span class="dv">25</span>)</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">1</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>POINT[code]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>frac<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"1.25"</span>), fraction_expected(code)))</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="pinning-tests-for-the-shared-tts-pipeline-currency-url-e-mail-symbols-acronyms-lowercase-policy" class="level4">
+<h4 class="anchored" data-anchor-id="pinning-tests-for-the-shared-tts-pipeline-currency-url-e-mail-symbols-acronyms-lowercase-policy">Pinning tests for the shared TTS pipeline (currency, URL, e-mail, symbols, acronyms, lowercase policy)</h4>
+<div id="acbf40cb" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode: every currency marker is spoken as the language's currency word followed by the amount in words.</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>CURRENCY_CASES <span class="op">=</span> [(<span class="st">"Rs. 500"</span>, <span class="st">"rupee"</span>, <span class="dv">500</span>), (<span class="st">"INR 7"</span>, <span class="st">"rupee"</span>, <span class="dv">7</span>), (<span class="st">"₹100"</span>, <span class="st">"rupee"</span>, <span class="dv">100</span>),</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>                  (<span class="st">"USD 3"</span>, <span class="st">"dollar"</span>, <span class="dv">3</span>), (<span class="st">"$20"</span>, <span class="st">"dollar"</span>, <span class="dv">20</span>), (<span class="st">"KRW 9"</span>, <span class="st">"won"</span>, <span class="dv">9</span>), (<span class="st">"₩9"</span>, <span class="st">"won"</span>, <span class="dv">9</span>)]</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> text, word, amount <span class="kw">in</span> CURRENCY_CASES:</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>        out <span class="op">=</span> spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(text)</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>        expected <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>spec[word]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(code, amount)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> out <span class="op">!=</span> expected:</span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>            bad[(text, code)] <span class="op">=</span> (out, expected)</span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode: in an e-mail address the local part is kept, "@" is spoken in English, and the domain is spelled out with the language's "dot" word (Punjabi keeps Latin case).</span></span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"mail help@support.in"</span>)</span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> (<span class="st">"mail help at s u p p o r t "</span> <span class="op">+</span> spec[<span class="st">"dot"</span>] <span class="op">+</span> <span class="st">" i n"</span>) <span class="cf">if</span> code <span class="op">!=</span> <span class="st">"pa"</span> <span class="cf">else</span> (<span class="st">"mail help at S U P P O R T "</span> <span class="op">+</span> spec[<span class="st">"dot"</span>] <span class="op">+</span> <span class="st">" I N"</span>)</span>
+<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out <span class="op">!=</span> expected:</span>
+<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a>        bad[code] <span class="op">=</span> (out, expected)</span>
+<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="4f4e96bf" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Golden outputs captured from the pre-refactor normalizers (after the bug fixes above, reviewed by hand).</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="co"># They pin URL / e-mail / symbol / acronym handling and each language's lowercase policy:</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Punjabi keeps Latin case, Hindi lowercases in tts_mode only, the rest always lowercase.</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>GOLDEN_TTS <span class="op">=</span> {<span class="st">'Visit https://example.com/a/b now'</span>: {<span class="st">'hi'</span>: <span class="st">'visit एच टी टी पी एस कोलन स्लैश स्लैश e x a m p l e '</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'डॉट c o m स्लैश a स्लैश b now'</span>,</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'pa'</span>: <span class="st">'Visit ਐਚ ਟੀ ਟੀ ਪੀ ਐੱਸ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ E X A M P L E '</span></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'ਡਾਟ C O M ਸਲੈਸ਼ A ਸਲੈਸ਼ B now'</span>,</span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'te'</span>: <span class="st">'visit హెచ్ టి టి పి ఎస్ కొలన్ స్లాష్ స్లాష్ e x a m '</span></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'p l e డాట్ c o m స్లాష్ a స్లాష్ b now'</span>,</span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'gu'</span>: <span class="st">'visit એચ ટી ટી પીએસ કોલન સ્લેશ સ્લેશ e x a m p l e '</span></span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'ડોટ c o m સ્લેશ a સ્લેશ b now'</span>,</span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'or'</span>: <span class="st">'visit ଏଚ୍ ଟି ଟି ପି ଏସ୍ କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ e x a m p '</span></span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'l e ଡଟ୍ c o m ସ୍ଲାଶ୍ a ସ୍ଲାଶ୍ b now'</span>,</span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'bn'</span>: <span class="st">'visit এইচ টি টি পি এস কোলন স্ল্যাশ স্ল্যাশ e x a m p '</span></span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'l e ডট c o m স্ল্যাশ a স্ল্যাশ b now'</span>,</span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'ta'</span>: <span class="st">'visit எச் டி டி பி எஸ் கோலன் ஸ்லாஷ் ஸ்லாஷ் e x a m p '</span></span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'l e டாட் c o m ஸ்லாஷ் a ஸ்லாஷ் b now'</span>,</span>
+<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'kn'</span>: <span class="st">'visit ಎಚ್ ಟಿ ಟಿ ಪಿ ಎಸ್ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ e x a '</span></span>
+<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'m p l e ಡಾಟ್ c o m ಸ್ಲ್ಯಾಶ್ a ಸ್ಲ್ಯಾಶ್ b now'</span>,</span>
+<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'ml'</span>: <span class="st">'visit എച്ച് ടി ടി പി എസ് കോളൺ സ്ലാഷ് സ്ലാഷ് e x a m '</span></span>
+<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'p l e ഡോട്ട് c o m സ്ലാഷ് a സ്ലാഷ് b now'</span>},</span>
+<span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a> <span class="st">'http://x.org'</span>: {<span class="st">'hi'</span>: <span class="st">'एच टी टी पी कोलन स्लैश स्लैश x डॉट o r g'</span>,</span>
+<span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'pa'</span>: <span class="st">'ਐਚ ਟੀ ਟੀ ਪੀ ਕੋਲਨ ਸਲੈਸ਼ ਸਲੈਸ਼ X ਡਾਟ O R G'</span>,</span>
+<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'te'</span>: <span class="st">'హెచ్ టి టి పి కొలన్ స్లాష్ స్లాష్ x డాట్ o r g'</span>,</span>
+<span id="cb78-25"><a href="#cb78-25" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'gu'</span>: <span class="st">'એચ ટી ટી પી કોલન સ્લેશ સ્લેશ x ડોટ o r g'</span>,</span>
+<span id="cb78-26"><a href="#cb78-26" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'or'</span>: <span class="st">'ଏଚ୍ ଟି ଟି ପି କୋଲନ୍ ସ୍ଲାଶ୍ ସ୍ଲାଶ୍ x ଡଟ୍ o r g'</span>,</span>
+<span id="cb78-27"><a href="#cb78-27" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'bn'</span>: <span class="st">'এইচ টি টি পি কোলন স্ল্যাশ স্ল্যাশ x ডট o r g'</span>,</span>
+<span id="cb78-28"><a href="#cb78-28" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'ta'</span>: <span class="st">'எச் டி டி பி கோலன் ஸ்லாஷ் ஸ்லாஷ் x டாட் o r g'</span>,</span>
+<span id="cb78-29"><a href="#cb78-29" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'kn'</span>: <span class="st">'ಎಚ್ ಟಿ ಟಿ ಪಿ ಕೋಲನ್ ಸ್ಲ್ಯಾಶ್ ಸ್ಲ್ಯಾಶ್ x ಡಾಟ್ o r g'</span>,</span>
+<span id="cb78-30"><a href="#cb78-30" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'ml'</span>: <span class="st">'എച്ച് ടി ടി പി കോളൺ സ്ലാഷ് സ്ലാഷ് x ഡോട്ട് o r g'</span>},</span>
+<span id="cb78-31"><a href="#cb78-31" aria-hidden="true" tabindex="-1"></a> <span class="st">'see www.amazon.in today'</span>: {<span class="st">'hi'</span>: <span class="st">'see w w w डॉट a m a z o n डॉट i n today'</span>,</span>
+<span id="cb78-32"><a href="#cb78-32" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'pa'</span>: <span class="st">'see W W W ਡਾਟ A M A Z O N ਡਾਟ I N today'</span>,</span>
+<span id="cb78-33"><a href="#cb78-33" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'te'</span>: <span class="st">'see w w w డాట్ a m a z o n డాట్ i n today'</span>,</span>
+<span id="cb78-34"><a href="#cb78-34" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'gu'</span>: <span class="st">'see w w w ડોટ a m a z o n ડોટ i n today'</span>,</span>
+<span id="cb78-35"><a href="#cb78-35" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'or'</span>: <span class="st">'see w w w ଡଟ୍ a m a z o n ଡଟ୍ i n today'</span>,</span>
+<span id="cb78-36"><a href="#cb78-36" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'bn'</span>: <span class="st">'see w w w ডট a m a z o n ডট i n today'</span>,</span>
+<span id="cb78-37"><a href="#cb78-37" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'ta'</span>: <span class="st">'see w w w டாட் a m a z o n டாட் i n today'</span>,</span>
+<span id="cb78-38"><a href="#cb78-38" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'kn'</span>: <span class="st">'see w w w ಡಾಟ್ a m a z o n ಡಾಟ್ i n today'</span>,</span>
+<span id="cb78-39"><a href="#cb78-39" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'ml'</span>: <span class="st">'see w w w ഡോട്ട് a m a z o n ഡോട്ട് i n today'</span>},</span>
+<span id="cb78-40"><a href="#cb78-40" aria-hidden="true" tabindex="-1"></a> <span class="st">'mail help@support.in'</span>: {<span class="st">'hi'</span>: <span class="st">'mail help at s u p p o r t डॉट i n'</span>,</span>
+<span id="cb78-41"><a href="#cb78-41" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'pa'</span>: <span class="st">'mail help at S U P P O R T ਡਾਟ I N'</span>,</span>
+<span id="cb78-42"><a href="#cb78-42" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'te'</span>: <span class="st">'mail help at s u p p o r t డాట్ i n'</span>,</span>
+<span id="cb78-43"><a href="#cb78-43" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'gu'</span>: <span class="st">'mail help at s u p p o r t ડોટ i n'</span>,</span>
+<span id="cb78-44"><a href="#cb78-44" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'or'</span>: <span class="st">'mail help at s u p p o r t ଡଟ୍ i n'</span>,</span>
+<span id="cb78-45"><a href="#cb78-45" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'bn'</span>: <span class="st">'mail help at s u p p o r t ডট i n'</span>,</span>
+<span id="cb78-46"><a href="#cb78-46" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'ta'</span>: <span class="st">'mail help at s u p p o r t டாட் i n'</span>,</span>
+<span id="cb78-47"><a href="#cb78-47" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'kn'</span>: <span class="st">'mail help at s u p p o r t ಡಾಟ್ i n'</span>,</span>
+<span id="cb78-48"><a href="#cb78-48" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'ml'</span>: <span class="st">'mail help at s u p p o r t ഡോട്ട് i n'</span>},</span>
+<span id="cb78-49"><a href="#cb78-49" aria-hidden="true" tabindex="-1"></a> <span class="st">'a &amp; b 50</span><span class="sc">% o</span><span class="st">ff + 2 = 4 * 3 # 1 - 2'</span>: {<span class="st">'hi'</span>: <span class="st">'a and b पचास percent off plus दो equals चार star तीन '</span></span>
+<span id="cb78-50"><a href="#cb78-50" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'hash एक minus दो'</span>,</span>
+<span id="cb78-51"><a href="#cb78-51" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'pa'</span>: <span class="st">'a and b ਪੰਜਾਹ percent off plus ਦੋ equals ਚਾਰ star '</span></span>
+<span id="cb78-52"><a href="#cb78-52" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'ਤਿੰਨ hash ਇੱਕ minus ਦੋ'</span>,</span>
+<span id="cb78-53"><a href="#cb78-53" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'te'</span>: <span class="st">'a and b యాభై percent off plus రెండు equals నాలుగు '</span></span>
+<span id="cb78-54"><a href="#cb78-54" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'star మూడు hash ఒకటి minus రెండు'</span>,</span>
+<span id="cb78-55"><a href="#cb78-55" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'gu'</span>: <span class="st">'a and b પચાસ percent off plus બે equals ચાર star '</span></span>
+<span id="cb78-56"><a href="#cb78-56" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'ત્રણ hash એક minus બે'</span>,</span>
+<span id="cb78-57"><a href="#cb78-57" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'or'</span>: <span class="st">'a and b ପଚାଶ percent off plus ଦୁଇ equals ଚାରି star '</span></span>
+<span id="cb78-58"><a href="#cb78-58" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'ତିନି hash ଏକ minus ଦୁଇ'</span>,</span>
+<span id="cb78-59"><a href="#cb78-59" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'bn'</span>: <span class="st">'a and b পঞ্চাশ percent off plus দুই equals চার star '</span></span>
+<span id="cb78-60"><a href="#cb78-60" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'তিন hash এক minus দুই'</span>,</span>
+<span id="cb78-61"><a href="#cb78-61" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'ta'</span>: <span class="st">'a and b ஐம்பது percent off plus இரண்டு equals நான்கு '</span></span>
+<span id="cb78-62"><a href="#cb78-62" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'star மூன்று hash ஒன்று minus இரண்டு'</span>,</span>
+<span id="cb78-63"><a href="#cb78-63" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'kn'</span>: <span class="st">'a and b ಐವತ್ತು percent off plus ಎರಡು equals ನಾಲ್ಕು '</span></span>
+<span id="cb78-64"><a href="#cb78-64" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'star ಮೂರು hash ಒಂದು minus ಎರಡು'</span>,</span>
+<span id="cb78-65"><a href="#cb78-65" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">'ml'</span>: <span class="st">'a and b അമ്പത് percent off plus രണ്ട് equals നാല് '</span></span>
+<span id="cb78-66"><a href="#cb78-66" aria-hidden="true" tabindex="-1"></a>                                             <span class="st">'star മൂന്ന് hash ഒന്ന് minus രണ്ട്'</span>},</span>
+<span id="cb78-67"><a href="#cb78-67" aria-hidden="true" tabindex="-1"></a> <span class="st">'USA and IBM'</span>: {<span class="st">'hi'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-68"><a href="#cb78-68" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'pa'</span>: <span class="st">'U S A and I B M'</span>,</span>
+<span id="cb78-69"><a href="#cb78-69" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'te'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-70"><a href="#cb78-70" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'gu'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-71"><a href="#cb78-71" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'or'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-72"><a href="#cb78-72" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'bn'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-73"><a href="#cb78-73" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'ta'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-74"><a href="#cb78-74" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'kn'</span>: <span class="st">'u s a and i b m'</span>,</span>
+<span id="cb78-75"><a href="#cb78-75" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'ml'</span>: <span class="st">'u s a and i b m'</span>},</span>
+<span id="cb78-76"><a href="#cb78-76" aria-hidden="true" tabindex="-1"></a> <span class="st">'Rs. 500 INR 7 ₹100 USD 3 $20 KRW 9 ₩9'</span>: {<span class="st">'hi'</span>: <span class="st">'रुपये पाँच सौ रुपये सात रुपये एक सौ डॉलर तीन '</span></span>
+<span id="cb78-77"><a href="#cb78-77" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'डॉलर बीस कोरियाई वॉन नौ कोरियाई वॉन नौ'</span>,</span>
+<span id="cb78-78"><a href="#cb78-78" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'pa'</span>: <span class="st">'ਰੁਪਏ ਪੰਜ ਸੌ ਰੁਪਏ ਸੱਤ ਰੁਪਏ ਸੌ ਡਾਲਰ ਤਿੰਨ ਡਾਲਰ ਵੀਹ '</span></span>
+<span id="cb78-79"><a href="#cb78-79" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ਕੋਰੀਆਈ ਵੌਨ ਨੌਂ ਕੋਰੀਆਈ ਵੌਨ ਨੌਂ'</span>,</span>
+<span id="cb78-80"><a href="#cb78-80" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'te'</span>: <span class="st">'రూపాయలు ఐదు వందలు రూపాయలు ఏడు రూపాయలు వంద '</span></span>
+<span id="cb78-81"><a href="#cb78-81" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'డాలర్లు మూడు డాలర్లు ఇరవై కొరియన్ వాన్ తొమ్మిది '</span></span>
+<span id="cb78-82"><a href="#cb78-82" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'కొరియన్ వాన్ తొమ్మిది'</span>,</span>
+<span id="cb78-83"><a href="#cb78-83" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'gu'</span>: <span class="st">'રૂપિયા પાંચ સો રૂપિયા સાત રૂપિયા એક સો ડોલર ત્રણ '</span></span>
+<span id="cb78-84"><a href="#cb78-84" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ડોલર વીસ કોરિયન વોન નવ કોરિયન વોન નવ'</span>,</span>
+<span id="cb78-85"><a href="#cb78-85" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'or'</span>: <span class="st">'ଟଙ୍କା ପାଞ୍ଚ ଶହ ଟଙ୍କା ସାତ ଟଙ୍କା ଶହେ ଡଲାର ତିନି '</span></span>
+<span id="cb78-86"><a href="#cb78-86" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ଡଲାର କୋଡିଏ କୋରିଆନ୍ ୱନ୍ ନଅ କୋରିଆନ୍ ୱନ୍ ନଅ'</span>,</span>
+<span id="cb78-87"><a href="#cb78-87" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'bn'</span>: <span class="st">'রুপি পাঁচশো রুপি সাত রুপি একশো ডলার তিন ডলার বিশ '</span></span>
+<span id="cb78-88"><a href="#cb78-88" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'কোরিয়ান ওন নয় কোরিয়ান ওন নয়'</span>,</span>
+<span id="cb78-89"><a href="#cb78-89" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'ta'</span>: <span class="st">'ரூபாய் ஐநூறு ரூபாய் ஏழு ரூபாய் நூறு டாலர் மூன்று '</span></span>
+<span id="cb78-90"><a href="#cb78-90" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'டாலர் இருபது கொரிய வான் ஒன்பது கொரிய வான் ஒன்பது'</span>,</span>
+<span id="cb78-91"><a href="#cb78-91" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'kn'</span>: <span class="st">'ರೂಪಾಯಿ ಐನೂರು ರೂಪಾಯಿ ಏಳು ರೂಪಾಯಿ ನೂರು ಡಾಲರ್ ಮೂರು '</span></span>
+<span id="cb78-92"><a href="#cb78-92" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ಡಾಲರ್ ಇಪ್ಪತ್ತು ಕೊರಿಯನ್ ವಾನ್ ಒಂಬತ್ತು ಕೊರಿಯನ್ ವಾನ್ '</span></span>
+<span id="cb78-93"><a href="#cb78-93" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ಒಂಬತ್ತು'</span>,</span>
+<span id="cb78-94"><a href="#cb78-94" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'ml'</span>: <span class="st">'രൂപ അഞ്ഞൂറ് രൂപ ഏഴ് രൂപ നൂറ് ഡോളർ മൂന്ന് ഡോളർ '</span></span>
+<span id="cb78-95"><a href="#cb78-95" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ഇരുപത് കൊറിയൻ വോൺ ഒമ്പത് കൊറിയൻ വോൺ ഒമ്പത്'</span>}}</span>
+<span id="cb78-96"><a href="#cb78-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-97"><a href="#cb78-97" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb78-98"><a href="#cb78-98" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> text, expected <span class="kw">in</span> GOLDEN_TTS.items():</span>
+<span id="cb78-99"><a href="#cb78-99" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb78-100"><a href="#cb78-100" aria-hidden="true" tabindex="-1"></a>        out <span class="op">=</span> spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(text)</span>
+<span id="cb78-101"><a href="#cb78-101" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> out <span class="op">!=</span> expected[code]:</span>
+<span id="cb78-102"><a href="#cb78-102" aria-hidden="true" tabindex="-1"></a>            bad[(text, code)] <span class="op">=</span> (out, expected[code])</span>
+<span id="cb78-103"><a href="#cb78-103" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="76109ab6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>GOLDEN_PLAIN <span class="op">=</span> {<span class="st">'Hello World 5 USA'</span>: {<span class="st">'hi'</span>: <span class="st">'Hello World पाँच USA'</span>,</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'pa'</span>: <span class="st">'Hello World ਪੰਜ USA'</span>,</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'te'</span>: <span class="st">'hello world ఐదు usa'</span>,</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'gu'</span>: <span class="st">'hello world પાંચ usa'</span>,</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'or'</span>: <span class="st">'hello world ପାଞ୍ଚ usa'</span>,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'bn'</span>: <span class="st">'hello world পাঁচ usa'</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'ta'</span>: <span class="st">'hello world ஐந்து usa'</span>,</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'kn'</span>: <span class="st">'hello world ಐದು usa'</span>,</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'ml'</span>: <span class="st">'hello world അഞ്ച് usa'</span>},</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a> <span class="st">'Rs. 500 INR 7 ₹100 USD 3 $20 KRW 9 ₩9'</span>: {<span class="st">'hi'</span>: <span class="st">'Rs. पाँच सौ INR सात ₹एक सौ USD तीन $बीस KRW नौ '</span></span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'₩नौ'</span>,</span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'pa'</span>: <span class="st">'Rs. ਪੰਜ ਸੌ INR ਸੱਤ ₹ਸੌ USD ਤਿੰਨ $ਵੀਹ KRW ਨੌਂ '</span></span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'₩ਨੌਂ'</span>,</span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'te'</span>: <span class="st">'rs. ఐదు వందలు inr ఏడు ₹వంద usd మూడు $ఇరవై krw '</span></span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'తొమ్మిది ₩తొమ్మిది'</span>,</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'gu'</span>: <span class="st">'rs. પાંચ સો inr સાત ₹એક સો usd ત્રણ $વીસ krw નવ '</span></span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'₩નવ'</span>,</span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'or'</span>: <span class="st">'rs. ପାଞ୍ଚ ଶହ inr ସାତ ₹ଶହେ usd ତିନି $କୋଡିଏ krw ନଅ '</span></span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'₩ନଅ'</span>,</span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'bn'</span>: <span class="st">'rs. পাঁচশো inr সাত ₹একশো usd তিন $বিশ krw নয় '</span></span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'₩নয়'</span>,</span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'ta'</span>: <span class="st">'rs. ஐநூறு inr ஏழு ₹நூறு usd மூன்று $இருபது krw '</span></span>
+<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ஒன்பது ₩ஒன்பது'</span>,</span>
+<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'kn'</span>: <span class="st">'rs. ಐನೂರು inr ಏಳು ₹ನೂರು usd ಮೂರು $ಇಪ್ಪತ್ತು krw '</span></span>
+<span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ಒಂಬತ್ತು ₩ಒಂಬತ್ತು'</span>,</span>
+<span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">'ml'</span>: <span class="st">'rs. അഞ്ഞൂറ് inr ഏഴ് ₹നൂറ് usd മൂന്ന് $ഇരുപത് krw '</span></span>
+<span id="cb79-27"><a href="#cb79-27" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">'ഒമ്പത് ₩ഒമ്പത്'</span>},</span>
+<span id="cb79-28"><a href="#cb79-28" aria-hidden="true" tabindex="-1"></a> <span class="st">'see www.amazon.in a &amp; b'</span>: {<span class="st">'hi'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-29"><a href="#cb79-29" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'pa'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-30"><a href="#cb79-30" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'te'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-31"><a href="#cb79-31" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'gu'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-32"><a href="#cb79-32" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'or'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-33"><a href="#cb79-33" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'bn'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-34"><a href="#cb79-34" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'ta'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-35"><a href="#cb79-35" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'kn'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>,</span>
+<span id="cb79-36"><a href="#cb79-36" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'ml'</span>: <span class="st">'see www.amazon.in a &amp; b'</span>}}</span>
+<span id="cb79-37"><a href="#cb79-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-38"><a href="#cb79-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Default mode (tts_mode=False): no spoken-form rewrites, but digits are still spelled and the lowercase policy applies.</span></span>
+<span id="cb79-39"><a href="#cb79-39" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb79-40"><a href="#cb79-40" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> text, expected <span class="kw">in</span> GOLDEN_PLAIN.items():</span>
+<span id="cb79-41"><a href="#cb79-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> code, spec <span class="kw">in</span> INDIC_TTS.items():</span>
+<span id="cb79-42"><a href="#cb79-42" aria-hidden="true" tabindex="-1"></a>        out <span class="op">=</span> spec[<span class="st">"cls"</span>]()(text)</span>
+<span id="cb79-43"><a href="#cb79-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> out <span class="op">!=</span> expected[code]:</span>
+<span id="cb79-44"><a href="#cb79-44" aria-hidden="true" tabindex="-1"></a>            bad[(text, code)] <span class="op">=</span> (out, expected[code])</span>
+<span id="cb79-45"><a href="#cb79-45" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f8321010" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Script-sharing languages spell digits in their own language when indic_numtowords knows it, else in the script's main language.</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> DevanagariNormalizer(lang<span class="op">=</span><span class="st">"mr"</span>)(<span class="st">"5 10"</span>) <span class="op">==</span> <span class="ss">f"</span><span class="sc">{</span>spoken(<span class="st">'mr'</span>, <span class="dv">5</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(<span class="st">'mr'</span>, <span class="dv">10</span>)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> DevanagariNormalizer(lang<span class="op">=</span><span class="st">"ne"</span>)(<span class="st">"5 10"</span>) <span class="op">==</span> <span class="ss">f"</span><span class="sc">{</span>spoken(<span class="st">'hi'</span>, <span class="dv">5</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(<span class="st">'hi'</span>, <span class="dv">10</span>)<span class="sc">}</span><span class="ss">"</span>  <span class="co"># no Nepali number words: Hindi is used</span></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> BengaliNormalizer(lang<span class="op">=</span><span class="st">"as"</span>)(<span class="st">"5 10"</span>) <span class="op">==</span> <span class="ss">f"</span><span class="sc">{</span>spoken(<span class="st">'as'</span>, <span class="dv">5</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>spoken(<span class="st">'as'</span>, <span class="dv">10</span>)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode on an unsupported Devanagari language is rejected up front.</span></span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a>    DevanagariNormalizer(lang<span class="op">=</span><span class="st">"ne"</span>, tts_mode<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">AssertionError</span>(<span class="st">"expected ValueError"</span>)</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb80-11"><a href="#cb80-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="daabbb2d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The visarga rule also holds for the languages that reuse a script's normalizer (Marathi, Nepali, Assamese).</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> make, base <span class="kw">in</span> [(<span class="kw">lambda</span>: DevanagariNormalizer(lang<span class="op">=</span><span class="st">"mr"</span>), <span class="bn">0x0900</span>), (<span class="kw">lambda</span>: DevanagariNormalizer(lang<span class="op">=</span><span class="st">"ne"</span>), <span class="bn">0x0900</span>),</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>                   (<span class="kw">lambda</span>: BengaliNormalizer(lang<span class="op">=</span><span class="st">"as"</span>), <span class="bn">0x0980</span>)]:</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>    word <span class="op">=</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x15</span>) <span class="op">+</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x3F</span>)</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> make()(word <span class="op">+</span> <span class="st">":"</span>)</span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> out <span class="op">==</span> word <span class="op">+</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x03</span>), (<span class="bu">hex</span>(base), out)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="27c9c6fa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tts_mode: "&amp;" is spoken as "and", and symbol words are separated by single spaces.</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"20% &amp; 5"</span>), <span class="ss">f"</span><span class="sc">{</span>spoken(code, <span class="dv">20</span>)<span class="sc">}</span><span class="ss"> percent and </span><span class="sc">{</span>spoken(code, <span class="dv">5</span>)<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> mismatches(<span class="kw">lambda</span> code, spec: (<span class="kw">lambda</span>: spec[<span class="st">"cls"</span>](tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"a &amp; b + 2 = 4"</span>), <span class="ss">f"a and b plus </span><span class="sc">{</span>spoken(code, <span class="dv">2</span>)<span class="sc">}</span><span class="ss"> equals </span><span class="sc">{</span>spoken(code, <span class="dv">4</span>)<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Devanagari (Marathi) already spoke "&amp;" as "and"; it stays that way.</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> DevanagariNormalizer(lang<span class="op">=</span><span class="st">"mr"</span>, tts_mode<span class="op">=</span><span class="va">True</span>)(<span class="st">"a &amp; b"</span>) <span class="op">==</span> <span class="st">"a and b"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="9ef50f78" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Numbers written in a script's own digits are spelled like the same ASCII number (the native digit zero is base + 0x66).</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>NATIVE_DIGIT_CASES <span class="op">=</span> [</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"hi"</span>, HindiNormalizer(), <span class="bn">0x0900</span>), (<span class="st">"mr"</span>, DevanagariNormalizer(lang<span class="op">=</span><span class="st">"mr"</span>), <span class="bn">0x0900</span>),</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"ne"</span>, DevanagariNormalizer(lang<span class="op">=</span><span class="st">"ne"</span>), <span class="bn">0x0900</span>), (<span class="st">"bn"</span>, BengaliNormalizer(), <span class="bn">0x0980</span>),</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"as"</span>, BengaliNormalizer(lang<span class="op">=</span><span class="st">"as"</span>), <span class="bn">0x0980</span>), (<span class="st">"pa"</span>, PunjabiNormalizer(), <span class="bn">0x0A00</span>),</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"gu"</span>, GujaratiNormalizer(), <span class="bn">0x0A80</span>), (<span class="st">"or"</span>, OdiaNormalizer(), <span class="bn">0x0B00</span>), (<span class="st">"ta"</span>, TamilNormalizer(), <span class="bn">0x0B80</span>),</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"te"</span>, TeluguNormalizer(), <span class="bn">0x0C00</span>), (<span class="st">"kn"</span>, KannadaNormalizer(), <span class="bn">0x0C80</span>), (<span class="st">"ml"</span>, MalayalamNormalizer(), <span class="bn">0x0D00</span>),</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>bad <span class="op">=</span> {}</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> code, normalizer, base <span class="kw">in</span> NATIVE_DIGIT_CASES:</span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>    native_50 <span class="op">=</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x66</span> <span class="op">+</span> <span class="dv">5</span>) <span class="op">+</span> <span class="bu">chr</span>(base <span class="op">+</span> <span class="bn">0x66</span>)</span>
+<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb83-13"><a href="#cb83-13" aria-hidden="true" tabindex="-1"></a>        out <span class="op">=</span> normalizer(native_50)</span>
+<span id="cb83-14"><a href="#cb83-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:  <span class="co"># a crash is the failure being reported</span></span>
+<span id="cb83-15"><a href="#cb83-15" aria-hidden="true" tabindex="-1"></a>        bad[code] <span class="op">=</span> <span class="ss">f"raised </span><span class="sc">{</span><span class="bu">type</span>(e)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
+<span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> normalizer(<span class="st">"50"</span>)</span>
+<span id="cb83-18"><a href="#cb83-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out <span class="op">!=</span> expected <span class="kw">or</span> <span class="bu">any</span>(ch.isdigit() <span class="cf">for</span> ch <span class="kw">in</span> out):</span>
+<span id="cb83-19"><a href="#cb83-19" aria-hidden="true" tabindex="-1"></a>        bad[code] <span class="op">=</span> (out, expected)</span>
+<span id="cb83-20"><a href="#cb83-20" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> bad, bad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/kurianbenoy\.github\.io\/whisper_normalizer");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/kurianbenoy/whisper_normalizer/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
