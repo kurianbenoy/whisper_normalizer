@@ -7,6 +7,7 @@ __all__ = ['NormalizerI', 'TtsLexicon', 'BaseNormalizer', 'DevanagariNormalizer'
 
 # %% ../nbs/1b.indic_normalizer.ipynb #cb6f2528-480a-4671-a52f-b8f33df5db30
 import re
+import unicodedata
 from dataclasses import dataclass
 from indic_numtowords import num2words, supported_langs
 
@@ -96,7 +97,7 @@ class TtsLexicon:
 
 
 _TTS_SYMBOLS = {
-    "&": " or ",
+    "&": " and ",
     "@": " at ",
     "%": " percent ",
     "+": " plus ",
@@ -204,7 +205,8 @@ class BaseNormalizer(NormalizerI):
         )
         for sym, word in _TTS_SYMBOLS.items():
             text = text.replace(sym, word)
-        return re.sub(r"\b[A-Z]{2,}\b", lambda m: " ".join(m.group(0)), text)
+        text = re.sub(r"\b[A-Z]{2,}\b", lambda m: " ".join(m.group(0)), text)
+        return re.sub(r" {2,}", " ", text).strip(" ")
 
     def _finish(self, text):
         """Shared tail of every Indic __call__: tts_mode rewrites, digit spelling, lowercase policy."""
@@ -224,7 +226,13 @@ class BaseNormalizer(NormalizerI):
     def _spell_digits(self, text):
         """Replace every run of digits with its spoken form in this normalizer's language."""
         lang = self.lang if self.lang in supported_langs else self.DEFAULT_NUMBER_LANG
-        return re.sub(r"\d+", lambda m: num2words(m.group(0), lang=lang), text)
+
+        def spell(match):
+            # indic_numtowords only reads ASCII digits, so map native digits (e.g. "५०") first.
+            digits = "".join(str(unicodedata.digit(ch)) for ch in match.group(0))
+            return num2words(digits, lang=lang)
+
+        return re.sub(r"\d+", spell, text)
 
     def _init_normalize_vowel_ending(self):
         if self.lang in langinfo.IE_LANGUAGES:
@@ -535,6 +543,7 @@ class DevanagariNormalizer(BaseNormalizer):
             symbol_map = {"&": " and ", "%": " percent ", "+": " plus "}
             for sym, word in symbol_map.items():
                 text = text.replace(sym, word)
+            text = re.sub(r" {2,}", " ", text).strip(" ")
 
         text = self._spell_digits(text)
         return text
