@@ -94,7 +94,7 @@ class BasicTextNormalizer:
         split_letters: bool = False,
         preserve_marks: bool = False,
     ):
-        """
+        r"""
         remove_diaciritics - Replace any other markers, symbols, and punctuations with a space and drop any diacritics
         split_letters  - It uses a regular expression \X to find all Unicode graphemes (extended grapheme clusters) in the string s and join them together by space
         preserve_marks - Keep Unicode Mark characters, such as Brahmic vowel signs and viramas
