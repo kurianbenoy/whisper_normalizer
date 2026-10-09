@@ -82,6 +82,34 @@ normalizer("I'm a little teapot, short and stout. Tip me over and pour me out!")
 
     'i m a little teapot short and stout tip me over and pour me out '
 
+## Supported languages and capabilities
+
+Every language belongs to a tier: `dedicated` (a normalizer written for the language), `script` (it reuses the normalizer of its script) or `generic` (conservative, script-safe cleanup). `supported_languages()` lists every language with this metadata (`tier`, `capabilities`, `digits_to_words`, `marks`), and `Normalizer(code)` exposes `.tier` and `.capabilities`.
+
+| Language | Code | Normalizer | Tier | Digits → words | Marks | `tts_mode` |
+|---|---|---|---|---|---|---|
+| Arabic | `ar` | `ArabicTextNormalizer` | dedicated | tts_mode | stripped | yes |
+| Bengali | `bn` | `BengaliNormalizer` | dedicated | always | kept | yes |
+| Chinese | `zh` | `ChineseTextNormalizer` | dedicated | never | kept | no |
+| English | `en` | `EnglishTextNormalizer` | dedicated | tts_mode | stripped | yes |
+| French | `fr` | `FrenchTextNormalizer` | dedicated | tts_mode | kept | yes |
+| Gujarati | `gu` | `GujaratiNormalizer` | dedicated | always | kept | yes |
+| Hindi | `hi` | `HindiNormalizer` | dedicated | always | kept | yes |
+| Kannada | `kn` | `KannadaNormalizer` | dedicated | always | kept | yes |
+| Malayalam | `ml` | `MalayalamNormalizer` | dedicated | always | kept | yes |
+| Odia | `or` | `OdiaNormalizer` | dedicated | always | kept | yes |
+| Punjabi | `pa` | `PunjabiNormalizer` | dedicated | always | kept | yes |
+| Russian | `ru` | `RussianTextNormalizer` | dedicated | tts_mode | kept | yes |
+| Spanish | `es` | `SpanishTextNormalizer` | dedicated | tts_mode | kept | yes |
+| Tamil | `ta` | `TamilNormalizer` | dedicated | always | kept | yes |
+| Telugu | `te` | `TeluguNormalizer` | dedicated | always | kept | yes |
+| Assamese | `as` | `BengaliNormalizer` | script | always | kept | yes |
+| Marathi | `mr` | `DevanagariNormalizer` | script | always | kept | yes |
+| Nepali | `ne` | `DevanagariNormalizer` | script | always (Hindi number words) | kept | no |
+| Sanskrit | `sa` | `DevanagariNormalizer` | script | always (Hindi number words) | kept | no |
+
+The other 82 languages use the generic tier: Unicode NFC, brackets and punctuation removed, case folded, combining marks kept. Digits become words only with `tts_mode=True`, which 33 of them support.
+
 ## Using BasicTextNormalizer in your mother tongue might be a bad idea
 
 Whisper Text Normalizer is not always recommended to be used. [Dr Kavya Manohar](https://www.linkedin.com/in/kavya-manohar/) has written a blogpost on why it might be a bad idea on her [blopost titled Indian Languages and Text Normalization: Part 1](https://kavyamanohar.com/post/indic-normalizer/).

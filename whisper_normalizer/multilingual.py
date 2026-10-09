@@ -18,6 +18,7 @@ import regex
 
 from .english import EnglishTextNormalizer
 from whisper_normalizer.indic import (
+    BaseNormalizer,
     BengaliNormalizer,
     DevanagariNormalizer,
     GujaratiNormalizer,
@@ -81,6 +82,20 @@ class LanguageSupport:
     factory: Callable[..., Callable[[str], str]]
     capabilities: tuple[str, ...]
     tier: str
+    # "kept": combining marks survive normalization; "stripped": they are removed.
+    marks: str = "kept"
+
+    @property
+    def digits_to_words(self) -> str:
+        """When digits are spelled as words: ``"always"``, ``"tts_mode"`` or ``"never"``.
+
+        The Indic-family normalizers always spell digits; other languages do so
+        only with ``tts_mode=True``, and not at all where ``tts_mode`` is unavailable.
+        """
+        factory = getattr(self.factory, "func", self.factory)
+        if isinstance(factory, type) and issubclass(factory, BaseNormalizer):
+            return "always"
+        return "tts_mode" if "tts_mode" in self.capabilities else "never"
 
 
 _GENERIC_CAPABILITIES = ("unicode", "punctuation", "whitespace", "case")
@@ -92,9 +107,9 @@ _GENERIC_CAPABILITIES_TTS = _GENERIC_CAPABILITIES + ("tts_mode",)
 # Odia, which is not one of Whisper's languages but already has a dedicated,
 # reviewed normalizer in this package.
 LANGUAGE_REGISTRY = {
-    "ar": LanguageSupport("ar", "Arabic", ArabicTextNormalizer, ('unicode', 'punctuation', 'numbers', 'digits', 'tts_mode'), "dedicated"),
+    "ar": LanguageSupport("ar", "Arabic", ArabicTextNormalizer, ('unicode', 'punctuation', 'numbers', 'digits', 'tts_mode'), "dedicated", marks="stripped"),
     "bn": LanguageSupport("bn", "Bengali", BengaliNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
-    "en": LanguageSupport("en", "English", EnglishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'spelling'), "dedicated"),
+    "en": LanguageSupport("en", "English", EnglishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'spelling', 'tts_mode'), "dedicated", marks="stripped"),
     "es": LanguageSupport("es", "Spanish", SpanishTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers', 'tts_mode'), "dedicated"),
     "fr": LanguageSupport("fr", "French", FrenchTextNormalizer, ('unicode', 'punctuation', 'numbers', 'locale_numbers', 'tts_mode'), "dedicated"),
     "gu": LanguageSupport("gu", "Gujarati", GujaratiNormalizer, ('unicode', 'script', 'numbers', 'tts_mode'), "dedicated"),
