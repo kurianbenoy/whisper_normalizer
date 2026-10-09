@@ -14,10 +14,11 @@ First 1.0 alpha. It adds a stable language-selection API, many more languages, A
 **New**
 
 - Added `Normalizer(language, **options)` (also `Normalizer.for_language(language, **options)`) and `supported_languages()` as the recommended entry point. `Normalizer` is callable, exposes `language`, `name`, `tier`, `capabilities`, `options` and `tts_mode`, keeps the selected language normalizer in `.normalizer`, and accepts ISO codes, BCP-47 tags such as `hi-IN` and `zh-Hans`, and English language names. It raises a clear `ValueError` for an unsupported language and for any option the selected normalizer does not accept, such as `tts_mode`, and never falls back silently to a generic normalizer.
+- Boolean options such as `tts_mode` now raise `TypeError` when given a non-bool such as `"no"`, instead of being silently accepted.
 - The registry covers 101 languages in three tiers (15 dedicated, 4 sharing a script normalizer, 82 conservative generic), with per-language capability metadata.
-- Added `tts_mode=True` for French, Spanish, Arabic, Chinese and Russian, for the generic tier (via `num2words`, installed with `pip install whisper_normalizer[tts]`), and for the Devanagari-based (Marathi, Nepali) and Assamese normalizers. Requesting `tts_mode` for a language `num2words` does not cover raises `ValueError`.
-- Added `tts_mode=True` for `EnglishTextNormalizer` (and `Normalizer("en", tts_mode=True)`): written numbers stay words instead of becoming digits, and digits, currencies (`$`, `€`, `£`, `¢`), percentages and decimals are spelled out ("$1,250.75" becomes "one thousand two hundred and fifty dollars seventy five cents"), with `&`, `+`, `=` and `@` spoken as words. Default English behavior is unchanged.
-- Added a supported-languages table to the README and docs, generated from the registry and checked by tests against real behavior for all 101 languages. It states per language whether digits become words always (the Indic family, including Nepali and Sanskrit, which use Hindi number words), only with `tts_mode` (most others) or never, and whether combining marks are kept or stripped (stripped only for English and Arabic). `supported_languages()` entries expose this as `digits_to_words` and `marks`.
+- Added `tts_mode=True` for French, Spanish, Arabic and Russian, for the generic tier (via `num2words`, installed with `pip install whisper_normalizer[tts]`), and for the Marathi (Devanagari-based) and Assamese normalizers. Chinese, Nepali and Sanskrit have no number words in `num2words` or `indic-numtowords`, so requesting `tts_mode` for them raises `ValueError`.
+- Added `tts_mode=True` for `EnglishTextNormalizer` (and `Normalizer("en", tts_mode=True)`): written numbers stay words instead of becoming digits, and digits, ordinals ("21st"), currencies (`$`, `€`, `£`, `¢`; "$0.05" is "five cents"), percentages and decimals are spelled out ("$1,250.75" becomes "one thousand two hundred and fifty dollars seventy five cents"), with `&`, `+`, `=` and `@` spoken as words. Default English behavior is unchanged.
+- Added a supported-languages table to the README and docs, generated from the registry and checked by tests against real behavior (`tts_mode` availability and digit spelling for all 101 languages, mark handling for every language except Chinese, which has no combining marks). It states per language whether digits become words always (the Indic family, including Nepali and Sanskrit, which use Hindi number words), only with `tts_mode` (most others) or never, and whether combining marks are kept or stripped (stripped only for English and Arabic). `supported_languages()` entries expose this as `digits_to_words` and `marks`.
 - Added `whisper_normalizer.evaluation` with `wer`, `cer`, orthographically-informed WER (`oiwer`, `oiwer_alignment`) and caller-judged `llm_wer`. It runs offline with no API keys or extra dependencies.
 - Added a Python usage example script, `examples/hello_world_whisper_normalizer.py`.
 
@@ -27,7 +28,17 @@ First 1.0 alpha. It adds a stable language-selection API, many more languages, A
 - Punjabi and Telugu colon-to-visarga correction replaced the preceding character with a control character; Punjabi `do_canonicalize_addak=True` had the same corruption.
 - All Indic normalizers: spelling digits as words rewrote digits inside other numbers, so `"1 10"` became `"एक एक0"`. Each number is now converted on its own.
 - Hindi and Punjabi raised `ValueError` on decimal numbers such as `"1.5"` in default mode. Each side of the dot is now spelled, for example `"एक.पाँच"`.
+- Indic `tts_mode`: `&` was spoken as "or" and is now spoken as "and", and the runs of spaces left around spoken symbols are collapsed (including in the Marathi and other Devanagari-based normalizers).
+- Indic normalizers crashed with `KeyError` on numbers written in a script's own digits (for example `५०` or `௫௦`); they are now spelled like the same ASCII number.
 - Fixed a `SyntaxWarning` from `BasicTextNormalizer` on newer Python versions.
+
+**Migrating from 0.1.x**
+
+- Use Python 3.11 or later.
+- `Normalizer("hi", tts_mode=True)` is the new recommended entry point; the direct classes (`HindiNormalizer`, `EnglishTextNormalizer`, ...) keep working unchanged.
+- `whisper_normalizer.core` is gone; it had no public API.
+- If you stored Indic baselines or evaluation scores, re-run them: the fixes above change output for numbers containing digits that also appear inside other numbers (`"1 10"`), for colons after Punjabi and Telugu text, for `&` in `tts_mode`, and for decimals in default mode (which used to crash for Hindi and Punjabi).
+- Pass real booleans for options such as `tts_mode`.
 
 **Internal**
 

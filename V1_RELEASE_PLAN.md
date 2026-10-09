@@ -92,7 +92,11 @@ unsupported input fails loudly and helpfully.
    registry entries via `functools.partial`.
 2. Add `tts_mode` to `ArabicTextNormalizer`, `EnglishTextNormalizer`, `FrenchTextNormalizer`,
    `SpanishTextNormalizer`, `RussianTextNormalizer`, and `ChineseTextNormalizer` using
-   `num2words` for number-to-words conversion.
+   `num2words` for number-to-words conversion. `num2words` has no Chinese converter, so
+   Chinese raises `ValueError` for `tts_mode` and the capability table says so.
+   English `tts_mode` skips the usual words-to-digits step (written numbers stay words),
+   spells digits, ordinals, currencies (`$`, `€`, `£`, `¢`), percentages and decimals
+   (decimals digit by digit), and speaks `&`, `+`, `=` and `@`; default behavior is unchanged.
 3. Add `tts_mode` to `MultilingualTextNormalizer` with a `num2words` lookup keyed by BCP 47
    language code; raise `ValueError` for languages `num2words` does not cover.
 4. Update `LANGUAGE_REGISTRY` capability tuples and `Normalizer` validation to
