@@ -118,7 +118,7 @@ If you need the basic normalizer for Indic or other scripts that use Unicode Mar
 
 ## This model extends Whisper_normalizer to support Indic languages as well.
 
-The logic for normalization in Indic languages is derived from [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library). The logic for Malayalam normalization is expanded beyond the Indic NLP library by [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#malayalamnormalizer).
+The logic for normalization in Indic languages is derived from [indic-nlp-library](https://github.com/anoopkunchukuttan/indic_nlp_library). The logic for Malayalam normalization is expanded beyond the Indic NLP library by [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#malayalamnormalizer).
 
 ## TTS Mode for Indic Languages
 
@@ -139,16 +139,16 @@ The following Indic languages support `tts_mode`:
 
 | Language | Code | Normalizer |
 |----|----|----|
-| Hindi | `hi` | [`HindiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#hindinormalizer) |
-| Bengali | `bn` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#bengalinormalizer) |
-| Gujarati | `gu` | [`GujaratiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#gujaratinormalizer) |
-| Odia | `or` | [`OdiaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#odianormalizer) |
-| Punjabi | `pa` | [`PunjabiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#punjabinormalizer) |
-| Tamil | `ta` | [`TamilNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#tamilnormalizer) |
-| Telugu | `te` | [`TeluguNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#telugunormalizer) |
-| Kannada | `kn` | [`KannadaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#kannadanormalizer) |
-| Malayalam | `ml` | [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#malayalamnormalizer) |
-| Assamese | `as` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/1b.indic_normalizer.html#bengalinormalizer) (via script tier) |
+| Hindi | `hi` | [`HindiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#hindinormalizer) |
+| Bengali | `bn` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#bengalinormalizer) |
+| Gujarati | `gu` | [`GujaratiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#gujaratinormalizer) |
+| Odia | `or` | [`OdiaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#odianormalizer) |
+| Punjabi | `pa` | [`PunjabiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#punjabinormalizer) |
+| Tamil | `ta` | [`TamilNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#tamilnormalizer) |
+| Telugu | `te` | [`TeluguNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#telugunormalizer) |
+| Kannada | `kn` | [`KannadaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#kannadanormalizer) |
+| Malayalam | `ml` | [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#malayalamnormalizer) |
+| Assamese | `as` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#bengalinormalizer) (via script tier) |
 
 ### Usage
 
