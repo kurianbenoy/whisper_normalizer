@@ -172,7 +172,6 @@ class EnglishNumberNormalizer:
                 for key in mapping
             ]
         )
-        self.literal_words = {"one", "ones"}
 
     def process_words(self, words: List[str]) -> Iterator[str]:
         prefix: Optional[str] = None
@@ -312,7 +311,13 @@ class EnglishNumberNormalizer:
                 else:
                     before = value // 1000 * 1000
                     residual = value % 1000
-                    value = before + residual * multiplier
+                    # A clean thousand ("one thousand million") scales as a whole;
+                    # otherwise only the trailing group scales ("two hundred thousand").
+                    value = (
+                        before + residual * multiplier
+                        if residual
+                        else before * multiplier
+                    )
             elif current in self.multipliers_suffixed:
                 multiplier, suffix = self.multipliers_suffixed[current]
                 if value is None:
@@ -328,7 +333,11 @@ class EnglishNumberNormalizer:
                 else:  # int
                     before = value // 1000 * 1000
                     residual = value % 1000
-                    value = before + residual * multiplier
+                    value = (
+                        before + residual * multiplier
+                        if residual
+                        else before * multiplier
+                    )
                     yield output(str(value) + suffix)
                 value = None
             elif current in self.preceding_prefixers:
@@ -434,20 +443,22 @@ class EnglishNumberNormalizer:
                 cents = int(m.group(3))
                 return f"{currency}{integer}.{cents:02d}"
             except ValueError:
-                return m.string
+                return m.group(0)
 
         def extract_cents(m: Match):
             try:
                 return f"¢{int(m.group(1))}"
             except ValueError:
-                return m.string
+                return m.group(0)
 
         # apply currency postprocessing; "$2 and ¢7" -> "$2.07"
         s = re.sub(r"([€£$])([0-9]+) (?:and )?¢([0-9]{1,2})\b", combine_cents, s)
         s = re.sub(r"[€£$]0.([0-9]{1,2})\b", extract_cents, s)
 
-        # write "one(s)" instead of "1(s)", just for the readability
-        s = re.sub(r"\b1(s?)\b", r"one\1", s)
+        # write "one(s)" instead of "1(s)", just for the readability;
+        # only when it stands alone, since `\b` would also match inside
+        # numbers like "$1", "1%", "1.5" and "3.1"
+        s = re.sub(r"(?<!\S)1(s?)(?!\S)", r"one\1", s)
 
         return s
 
@@ -480,6 +491,11 @@ class EnglishSpellingNormalizer:
 _NUMBER = r"\d+(?:\.\d+)?"  # an integer or decimal number
 
 
+def _pluralize(word: str) -> str:
+    """Naive English plural, used for spoken decades ("ninety" -> "nineties")."""
+    return word[:-1] + "ies" if word.endswith("y") else word + "s"
+
+
 class EnglishTextNormalizer:
     """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper. As per the text normalization/standardization approach  Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `EnglishTextNormalizer` does the following functionality:
 
@@ -500,7 +516,9 @@ class EnglishTextNormalizer:
 
     With `tts_mode=True` (requires `pip install whisper_normalizer[tts]`) the text is prepared for speech
     instead: step 9 is skipped so written numbers stay words, digits, currencies, percentages and decimals
-    are spelled out, and `&`, `+`, `=` and `@` are spoken as words.
+    are spelled out, and `&`, `+`, `=` and `@` are spoken as words. A leading `-` is
+    spoken as `minus`, phone numbers are read digit by digit, and decades such as
+    `1990s` are spoken as words.
     """
 
     # (symbol) -> (major unit, major plural, minor unit, minor plural)
@@ -629,6 +647,36 @@ class EnglishTextNormalizer:
         )
         return re.sub(rf"\b{_NUMBER}\b", lambda m: self._spell(m.group(0)), s)
 
+    def _speak_symbols(self, s: str) -> str:
+        """tts_mode: speak symbols, signs, phone numbers and decades."""
+        for symbol, word in self._TTS_SYMBOLS.items():
+            s = s.replace(symbol, word)
+        # A leading "-" is a sign; a hyphen between two numbers stays a range.
+        s = re.sub(r"(?<!\S)-(?=\d)", " minus ", s)
+        # Phone numbers are read digit by digit, not as two large integers.
+        s = re.sub(
+            r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b|\b\d{3}[-.\s]\d{4}\b",
+            self._spell_phone,
+            s,
+        )
+        return re.sub(r"\b((?:1[6-9]|20)\d{2})s\b", self._spell_decade, s)
+
+    def _spell_phone(self, match: re.Match) -> str:
+        """Speak a phone number one digit at a time."""
+        return " ".join(
+            self._spell(digit) for digit in re.sub(r"\D", "", match.group(0))
+        )
+
+    def _spell_decade(self, match: re.Match) -> str:
+        """Speak a decade: "1990s" -> "nineteen nineties"."""
+        year = match.group(1)
+        if year.endswith("00"):
+            if int(year) % 1000 == 0:
+                return self._spell(year) + "s"  # 2000s -> two thousands
+            return self._spell(year[:2]) + " hundreds"  # 1900s -> nineteen hundreds
+        # 1990s -> nineteen nineties, 2010s -> twenty tens
+        return f"{self._spell(year[:2])} {_pluralize(self._spell(year[2:]))}"
+
     def __call__(self, s: str):
         s = s.lower()
 
@@ -641,8 +689,7 @@ class EnglishTextNormalizer:
             s = re.sub(pattern, replacement, s)
 
         if self.tts_mode:
-            for symbol, word in self._TTS_SYMBOLS.items():
-                s = s.replace(symbol, word)
+            s = self._speak_symbols(s)
 
         s = re.sub(r"(\d),(\d)", r"\1\2", s)  # remove commas between digits
         s = re.sub(r"\.([^0-9]|$)", r" \1", s)  # remove periods not followed by numbers
