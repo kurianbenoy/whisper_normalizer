@@ -2,13 +2,15 @@
 
 ## Supported Versions
 
-This project follows semantic versioning. Security updates are provided for the latest 1.0.x release, including pre-releases such as `1.0.0a1`, and for the latest 0.1.x release until 1.0.0 is published.
+This project follows semantic versioning. Security updates are provided for the latest 1.0.x release.
 
-| Version                                      | Supported                                   |
-| -------------------------------------------- | ------------------------------------------- |
-| 1.0.x (including pre-releases, e.g. 1.0.0a1) | :white_check_mark:                          |
-| 0.1.x                                        | :warning: security fixes until 1.0.0 final  |
-| < 0.1.0                                      | :x:                                         |
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.0.x   | :white_check_mark: |
+| 0.1.x   | :x:                |
+| < 0.1.0 | :x:                |
+
+The 0.1.x line reached end of life with the 1.0.0 release.
 
 Fixes are released against the latest version in a supported line; upgrade to receive them.
 

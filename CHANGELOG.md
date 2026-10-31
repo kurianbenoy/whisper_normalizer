@@ -2,9 +2,9 @@
 
 <!-- do not remove -->
 
-## 1.0.0a1 - 2026-10-09
+## 1.0.0 - 2026-10-31
 
-First 1.0 alpha. It adds a stable language-selection API, many more languages, ASR evaluation metrics, and fixes several Indic normalization bugs.
+First stable 1.0 release. It adds a stable language-selection API, many more languages, ASR evaluation metrics, and fixes several normalization bugs.
 
 **Breaking changes**
 
@@ -31,6 +31,15 @@ First 1.0 alpha. It adds a stable language-selection API, many more languages, A
 - Indic `tts_mode`: `&` was spoken as "or" and is now spoken as "and", and the runs of spaces left around spoken symbols are collapsed (including in the Marathi and other Devanagari-based normalizers).
 - Indic normalizers crashed with `KeyError` on numbers written in a script's own digits (for example `५०` or `௫௦`); they are now spelled like the same ASCII number.
 - Fixed a `SyntaxWarning` from `BasicTextNormalizer` on newer Python versions.
+- French no longer turns the article "un"/"une" into the number `1` (`"un chat"` used to normalize to `"1 chat"`).
+- English: a decimal that starts with `1` kept its point, so `"1.5"` now stays `"1.5"` instead of becoming `"one.5"`.
+- English: numbers such as `"one thousand million"` now normalize to `1000000000` instead of silently dropping the `million`.
+- `BasicTextNormalizer` can be pickled again, so it works with `multiprocessing`-based data pipelines.
+- English `tts_mode` now speaks a leading minus sign (`"-5"` is "minus five"), reads phone numbers digit by digit (`"555-1234"`) and spells decades (`"1990s"` is "nineteen nineties").
+- French, Spanish and Russian `tts_mode` now speak `€`, `$`, `£` (and `₽` in Russian) instead of dropping the currency symbol.
+- `NormalizerI.normalize()` and `BaseNormalizer` subclasses without a TTS lexicon now raise `NotImplementedError` instead of returning `None` or failing with `AttributeError`; the broken `NormalizerI.correct_visarga()` helper was removed, and `get_char_stats()` returns counts instead of printing them.
+- Removed the dead `"kK"` entries from `langinfo.SCRIPT_RANGES`/`IE_LANGUAGES`.
+- Sample webapp: the `devanagari` option is selectable again (it was an enum alias of `hi` and was silently dropped), and HTTP errors raised for invalid options are no longer re-wrapped.
 
 **Migrating from 0.1.x**
 
@@ -38,11 +47,13 @@ First 1.0 alpha. It adds a stable language-selection API, many more languages, A
 - `Normalizer("hi", tts_mode=True)` is the new recommended entry point; the direct classes (`HindiNormalizer`, `EnglishTextNormalizer`, ...) keep working unchanged.
 - `whisper_normalizer.core` is gone; it had no public API.
 - If you stored Indic baselines or evaluation scores, re-run them: the fixes above change output for numbers containing digits that also appear inside other numbers (`"1 10"`), for colons after Punjabi and Telugu text, for `&` in `tts_mode`, and for decimals in default mode (which used to crash for Hindi and Punjabi).
+- Re-run stored baselines for French (the article `un`/`une`), English decimals (`"1.5"`) and `tts_mode` output (signs, phone numbers, decades, currency words), whose normalized text changed.
 - Pass real booleans for options such as `tts_mode`.
 
 **Internal**
 
 - The nine Indic normalizers with `tts_mode` now share one pipeline for currencies, decimals, URLs, e-mail addresses, symbols and digit spelling, with each language supplying only its spoken words. Output is unchanged apart from the fixes above; per-language differences such as Hindi reading fractions digit by digit and Punjabi keeping Latin letter case are preserved.
+- The English normalizers are checked against OpenAI Whisper's own normalizer test suite (67 assertions), so drift from upstream is caught by the notebook tests. The intentional divergences are pinned separately.
 - Release builds now produce an sdist as well as a wheel, and the release workflow fails unless the tag, package version and changelog entry agree.
 
 ## 0.1.15 - 2026-07-26
