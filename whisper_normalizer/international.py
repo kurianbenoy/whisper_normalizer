@@ -60,6 +60,59 @@ def _digits_to_words(text: str, lang: str) -> str:
     return re.sub(r"\b\d+(?:\.\d+)?\b", replace_num, text)
 
 
+# Spoken currency units for tts_mode: symbol -> (one, few, many). Languages
+# without a "few" form repeat the plural.
+_CURRENCY_WORDS = {
+    "es": {
+        "€": ("euro", "euros", "euros"),
+        "$": ("dólar", "dólares", "dólares"),
+        "£": ("libra", "libras", "libras"),
+    },
+    "fr": {
+        "€": ("euro", "euros", "euros"),
+        "$": ("dollar", "dollars", "dollars"),
+        "£": ("livre", "livres", "livres"),
+    },
+    "ru": {
+        "€": ("евро", "евро", "евро"),
+        "$": ("доллар", "доллара", "долларов"),
+        "£": ("фунт", "фунта", "фунтов"),
+        "₽": ("рубль", "рубля", "рублей"),
+    },
+}
+
+_AMOUNT = r"\d+(?:[.,]\d+)*"
+
+
+def _currency_form(forms: tuple[str, str, str], amount: str, lang: str) -> str:
+    """Choose the spoken unit form for ``amount`` (one, few or many)."""
+    try:
+        value = int(amount)
+    except ValueError:
+        return forms[2]
+    if value == 1:
+        return forms[0]
+    if lang == "ru" and 2 <= value % 10 <= 4 and not 12 <= value % 100 <= 14:
+        return forms[1]
+    return forms[2] if lang == "ru" else forms[1]
+
+
+def _speak_currencies(text: str, lang: str) -> str:
+    """tts_mode: say a currency symbol instead of dropping it as punctuation."""
+    units = _CURRENCY_WORDS.get(lang)
+    if not units:
+        return text
+    symbols = "".join(units)
+
+    def spoken(match: re.Match) -> str:
+        forms = units[match.group(2)]
+        return f"{match.group(1)} {_currency_form(forms, match.group(1), lang)}"
+
+    # "€20" is written before the amount in some text; move it behind first.
+    text = re.sub(rf"([{symbols}])\s*({_AMOUNT})", r"\2 \1", text)
+    return re.sub(rf"({_AMOUNT})\s*([{symbols}])", spoken, text)
+
+
 class _LatinTextNormalizer:
     """Shared conservative normalization for space-separated Latin-script languages."""
 
@@ -87,7 +140,9 @@ class _LatinTextNormalizer:
         if self.tts_mode:
             # Merge thousands separators and normalize the decimal mark first, so a
             # grouped/decimal number converts as one value instead of several.
-            text = _digits_to_words(self._normalize_numeric_separators(text), self.language)
+            text = self._normalize_numeric_separators(text)
+            text = _speak_currencies(text, self.language)
+            text = _digits_to_words(text, self.language)
         else:
             text = alpha2digit(self._preprocess(text), self.language, threshold=self.number_threshold)
             text = self._normalize_numeric_separators(text)
@@ -100,6 +155,8 @@ class FrenchTextNormalizer(_LatinTextNormalizer):
     """Normalize French text without removing accents or ligatures."""
 
     language = "fr"
+    # Avoid treating the article "un"/"une" as the number one.
+    number_threshold = 2
 
     def _normalize_numeric_separators(self, text: str) -> str:
         # French commonly groups thousands with a regular, no-break, or narrow no-break space.
@@ -144,6 +201,7 @@ class _NonLatinTextNormalizer:
         text = text.replace("\u200b", "").replace("\ufeff", "")
         text = self._prepare(text)
         if self.tts_mode and self.language:
+            text = _speak_currencies(text, self.language)
             text = _digits_to_words(text, self.language)
         text = regex.sub(r"(?<!\d)[\p{P}\p{S}]+|[\p{P}\p{S}]+(?!\d)", " ", text)
         return re.sub(r"\s+", " ", text).strip()
