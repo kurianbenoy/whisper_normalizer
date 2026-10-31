@@ -9,6 +9,7 @@ __all__ = ['ADDITIONAL_DIACRITICS', 'remove_symbols_and_diacritics', 'remove_sym
 
 # %% ../nbs/00_basic.ipynb #2eb4996d
 # This code is from OpenAI Whisper Repository: https://github.com/openai/whisper/tree/main/whisper/normalizers
+import functools
 import re
 import unicodedata
 
@@ -95,7 +96,7 @@ class BasicTextNormalizer:
         preserve_marks: bool = False,
     ):
         r"""
-        remove_diaciritics - Replace any other markers, symbols, and punctuations with a space and drop any diacritics
+        remove_diacritics - Replace any other markers, symbols, and punctuations with a space and drop any diacritics
         split_letters  - It uses a regular expression \X to find all Unicode graphemes (extended grapheme clusters) in the string s and join them together by space
         preserve_marks - Keep Unicode Mark characters, such as Brahmic vowel signs and viramas
         """
@@ -104,10 +105,11 @@ class BasicTextNormalizer:
                 "preserve_marks cannot be used with remove_diacritics=True"
             )
 
+        # functools.partial (unlike a lambda) keeps the normalizer picklable.
         self.clean = (
             remove_symbols_and_diacritics
             if remove_diacritics
-            else lambda s: remove_symbols(s, preserve_marks=preserve_marks)
+            else functools.partial(remove_symbols, preserve_marks=preserve_marks)
         )
         self.split_letters = split_letters
 
