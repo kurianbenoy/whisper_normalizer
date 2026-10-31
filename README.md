@@ -9,7 +9,7 @@
 [![Github license](https://img.shields.io/github/license/kurianbenoy/whisper_normalizer.svg)](https://github.com/kurianbenoy/whisper_normalizer/blob/main/LICENSE)
 [![Github Stars](https://img.shields.io/github/stars/kurianbenoy/whisper_normalizer.svg?colorA=orange&colorB=orange&logo=github)](https://github.com/kurianbenoy/whisper_normalizer/stargazers)
 [![PyPI version](https://img.shields.io/pypi/v/whisper-normalizer.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/whisper-normalizer/)
-[Humans behind](../humans.txt)
+[Humans behind](https://kurianbenoy.github.io/whisper_normalizer/humans.txt)
 <!-- [![Downloads](https://static.pepy.tech/badge/whisper-normalizer)](https://github.com/kurianbenoy/whisper_normalizer) -->
 <!-- [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/kurianbenoy/whisper_normalizer)
 [![python version](https://img.shields.io/badge/Python-<3.12-blue)](https://github.com/kurianbenoy/whisper_normalizer) -->
@@ -84,29 +84,29 @@ normalizer("I'm a little teapot, short and stout. Tip me over and pour me out!")
 
 ## Supported languages and capabilities
 
-Every language belongs to a tier: `dedicated` (a normalizer written for the language), `script` (it reuses the normalizer of its script) or `generic` (conservative, script-safe cleanup). `supported_languages()` lists every language with this metadata (`tier`, `capabilities`, `digits_to_words`, `marks`), and `Normalizer(code)` exposes `.tier` and `.capabilities`.
+Every language belongs to a tier: `dedicated` (a normalizer written for the language), `script` (it reuses the normalizer of its script) or `generic` (conservative, script-safe cleanup). [`supported_languages()`](https://kurianbenoy.github.io/whisper_normalizer/multilingual.html#supported_languages) lists every language with this metadata (`tier`, `capabilities`, `digits_to_words`, `marks`), and `Normalizer(code)` exposes `.tier` and `.capabilities`.
 
 | Language | Code | Normalizer | Tier | Digits → words | Marks | `tts_mode` |
-|---|---|---|---|---|---|---|
-| Arabic | `ar` | `ArabicTextNormalizer` | dedicated | tts_mode | stripped | yes |
-| Bengali | `bn` | `BengaliNormalizer` | dedicated | always | kept | yes |
-| Chinese | `zh` | `ChineseTextNormalizer` | dedicated | never | kept | no |
-| English | `en` | `EnglishTextNormalizer` | dedicated | tts_mode | stripped | yes |
-| French | `fr` | `FrenchTextNormalizer` | dedicated | tts_mode | kept | yes |
-| Gujarati | `gu` | `GujaratiNormalizer` | dedicated | always | kept | yes |
-| Hindi | `hi` | `HindiNormalizer` | dedicated | always | kept | yes |
-| Kannada | `kn` | `KannadaNormalizer` | dedicated | always | kept | yes |
-| Malayalam | `ml` | `MalayalamNormalizer` | dedicated | always | kept | yes |
-| Odia | `or` | `OdiaNormalizer` | dedicated | always | kept | yes |
-| Punjabi | `pa` | `PunjabiNormalizer` | dedicated | always | kept | yes |
-| Russian | `ru` | `RussianTextNormalizer` | dedicated | tts_mode | kept | yes |
-| Spanish | `es` | `SpanishTextNormalizer` | dedicated | tts_mode | kept | yes |
-| Tamil | `ta` | `TamilNormalizer` | dedicated | always | kept | yes |
-| Telugu | `te` | `TeluguNormalizer` | dedicated | always | kept | yes |
-| Assamese | `as` | `BengaliNormalizer` | script | always | kept | yes |
-| Marathi | `mr` | `DevanagariNormalizer` | script | always | kept | yes |
-| Nepali | `ne` | `DevanagariNormalizer` | script | always (Hindi number words) | kept | no |
-| Sanskrit | `sa` | `DevanagariNormalizer` | script | always (Hindi number words) | kept | no |
+|----|----|----|----|----|----|----|
+| Arabic | `ar` | [`ArabicTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/international.html#arabictextnormalizer) | dedicated | tts_mode | stripped | yes |
+| Bengali | `bn` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#bengalinormalizer) | dedicated | always | kept | yes |
+| Chinese | `zh` | [`ChineseTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/international.html#chinesetextnormalizer) | dedicated | never | kept | no |
+| English | `en` | [`EnglishTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/english.html#englishtextnormalizer) | dedicated | tts_mode | stripped | yes |
+| French | `fr` | [`FrenchTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/international.html#frenchtextnormalizer) | dedicated | tts_mode | kept | yes |
+| Gujarati | `gu` | [`GujaratiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#gujaratinormalizer) | dedicated | always | kept | yes |
+| Hindi | `hi` | [`HindiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#hindinormalizer) | dedicated | always | kept | yes |
+| Kannada | `kn` | [`KannadaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#kannadanormalizer) | dedicated | always | kept | yes |
+| Malayalam | `ml` | [`MalayalamNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#malayalamnormalizer) | dedicated | always | kept | yes |
+| Odia | `or` | [`OdiaNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#odianormalizer) | dedicated | always | kept | yes |
+| Punjabi | `pa` | [`PunjabiNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#punjabinormalizer) | dedicated | always | kept | yes |
+| Russian | `ru` | [`RussianTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/international.html#russiantextnormalizer) | dedicated | tts_mode | kept | yes |
+| Spanish | `es` | [`SpanishTextNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/international.html#spanishtextnormalizer) | dedicated | tts_mode | kept | yes |
+| Tamil | `ta` | [`TamilNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#tamilnormalizer) | dedicated | always | kept | yes |
+| Telugu | `te` | [`TeluguNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#telugunormalizer) | dedicated | always | kept | yes |
+| Assamese | `as` | [`BengaliNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#bengalinormalizer) | script | always | kept | yes |
+| Marathi | `mr` | [`DevanagariNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#devanagarinormalizer) | script | always | kept | yes |
+| Nepali | `ne` | [`DevanagariNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#devanagarinormalizer) | script | always (Hindi number words) | kept | no |
+| Sanskrit | `sa` | [`DevanagariNormalizer`](https://kurianbenoy.github.io/whisper_normalizer/indic_normalizer.html#devanagarinormalizer) | script | always (Hindi number words) | kept | no |
 
 The other 82 languages use the generic tier: Unicode NFC, brackets and punctuation removed, case folded, combining marks kept. Digits become words only with `tts_mode=True`, which 33 of them support.
 
@@ -190,3 +190,7 @@ normalizer("എന്റെ കമ്പ്യൂട്ടറിനു് എന
 ```
 
     'എന്റെ കമ്പ്യൂട്ടറിന് എന്റെ ഭാഷ.'
+
+## Language Capability Table
+
+All 101 supported languages and their normalizer capabilities:
