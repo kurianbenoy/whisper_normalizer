@@ -76,7 +76,10 @@ class NormalizerI(object):
         return text
 
     def normalize(self, text):
-        pass
+        """Apply this script's normalization rules; subclasses must override this."""
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement normalize()"
+        )
 
 # %% ../nbs/04_indic_normalizer.ipynb #63451279
 @dataclass(frozen=True)
@@ -148,6 +151,10 @@ class BaseNormalizer(NormalizerI):
     def _speak(self, text):
         """tts_mode rewrites: currencies, decimals, URLs, e-mail addresses, symbols and acronyms."""
         lx = self.TTS
+        if lx is None:
+            raise NotImplementedError(
+                f"{type(self).__name__} has no tts_mode lexicon; set TTS on the class"
+            )
         for pattern, word in (
             (r"INR\s+(\d+)", lx.rupee),
             (r"Rs\.\s+(\d+)", lx.rupee),
@@ -453,23 +460,17 @@ class BaseNormalizer(NormalizerI):
         return text
 
     def get_char_stats(self, text):
-        print(len(re.findall(NormalizerI.BYTE_ORDER_MARK, text)))
-        print(len(re.findall(NormalizerI.BYTE_ORDER_MARK_2, text)))
-        print(len(re.findall(NormalizerI.WORD_JOINER, text)))
-        print(len(re.findall(NormalizerI.SOFT_HYPHEN, text)))
-
-        print(len(re.findall(NormalizerI.ZERO_WIDTH_SPACE, text)))
-        print(len(re.findall(NormalizerI.NO_BREAK_SPACE, text)))
-
-        print(len(re.findall(NormalizerI.ZERO_WIDTH_NON_JOINER, text)))
-        print(len(re.findall(NormalizerI.ZERO_WIDTH_JOINER, text)))
-
-        # for mobj in re.finditer(NormalizerI.ZERO_WIDTH_NON_JOINER,text):
-        #    print text[mobj.start()-10:mobj.end()+10].replace('\n', ' ').replace(NormalizerI.ZERO_WIDTH_NON_JOINER,'').encode('utf-8')
-        # print hex(ord(text[mobj.end():mobj.end()+1]))
-
-    def correct_visarga(self, text, visarga_char, char_range):
-        text = re.sub(r"([\u0900-\u097f]):", "\\1\u0903", text)
+        """Count the control characters this normalizer removes, for corpus debugging."""
+        return {
+            "byte_order_mark": text.count(NormalizerI.BYTE_ORDER_MARK),
+            "byte_order_mark_2": text.count(NormalizerI.BYTE_ORDER_MARK_2),
+            "word_joiner": text.count(NormalizerI.WORD_JOINER),
+            "soft_hyphen": text.count(NormalizerI.SOFT_HYPHEN),
+            "zero_width_space": text.count(NormalizerI.ZERO_WIDTH_SPACE),
+            "no_break_space": text.count(NormalizerI.NO_BREAK_SPACE),
+            "zero_width_non_joiner": text.count(NormalizerI.ZERO_WIDTH_NON_JOINER),
+            "zero_width_joiner": text.count(NormalizerI.ZERO_WIDTH_JOINER),
+        }
 
 # %% ../nbs/04_indic_normalizer.ipynb #2ad0f039
 class DevanagariNormalizer(BaseNormalizer):
@@ -482,6 +483,20 @@ class DevanagariNormalizer(BaseNormalizer):
     """
 
     NUKTA = "\u093c"
+    # Precomposed nukta letters and the decomposed form this normalizer emits.
+    NUKTA_DECOMPOSITIONS = {
+        "\u0929": "\u0928" + NUKTA,
+        "\u0931": "\u0930" + NUKTA,
+        "\u0934": "\u0933" + NUKTA,
+        "\u0958": "\u0915" + NUKTA,
+        "\u0959": "\u0916" + NUKTA,
+        "\u095a": "\u0917" + NUKTA,
+        "\u095b": "\u091c" + NUKTA,
+        "\u095c": "\u0921" + NUKTA,
+        "\u095d": "\u0922" + NUKTA,
+        "\u095e": "\u092b" + NUKTA,
+        "\u095f": "\u092f" + NUKTA,
+    }
 
     DEFAULT_NUMBER_LANG = "hi"
 
@@ -516,17 +531,8 @@ class DevanagariNormalizer(BaseNormalizer):
         text = text.replace("\u0972", "\u090f")
 
         # decomposing Nukta based composite characters
-        text = text.replace("\u0929", "\u0928" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u0931", "\u0930" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u0934", "\u0933" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u0958", "\u0915" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u0959", "\u0916" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095a", "\u0917" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095b", "\u091c" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095c", "\u0921" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095d", "\u0922" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095e", "\u092b" + DevanagariNormalizer.NUKTA)
-        text = text.replace("\u095f", "\u092f" + DevanagariNormalizer.NUKTA)
+        for composed, decomposed in self.NUKTA_DECOMPOSITIONS.items():
+            text = text.replace(composed, decomposed)
 
         if self.remove_nuktas:
             text = text.replace(DevanagariNormalizer.NUKTA, "")
@@ -549,25 +555,21 @@ class DevanagariNormalizer(BaseNormalizer):
         return text
 
     def get_char_stats(self, text):
-        super(DevanagariNormalizer, self).get_char_stats(text)
-
-        print((len(re.findall("\u0929", text))))
-        print((len(re.findall("\u0931", text))))
-        print((len(re.findall("\u0934", text))))
-        print((len(re.findall("\u0958", text))))
-        print((len(re.findall("\u0959", text))))
-        print((len(re.findall("\u095a", text))))
-        print((len(re.findall("\u095b", text))))
-        print((len(re.findall("\u095c", text))))
-        print((len(re.findall("\u095d", text))))
-        print((len(re.findall("\u095e", text))))
-        print((len(re.findall("\u095f", text))))
+        stats = super(DevanagariNormalizer, self).get_char_stats(text)
+        stats.update(
+            {
+                f"nukta_composite_{composed}": text.count(composed)
+                for composed in self.NUKTA_DECOMPOSITIONS
+            }
+        )
+        return stats
 
 # %% ../nbs/04_indic_normalizer.ipynb #f2d00c4d-c543-4142-ab09-2d7287e5bce6
 class HindiNormalizer(BaseNormalizer):
-    """Fork of Devanagiri normalizer. With additional changes for Hindi and tts_mode."""
+    """Fork of Devanagari normalizer. With additional changes for Hindi and tts_mode."""
 
     NUKTA = "\u093c"
+    NUKTA_DECOMPOSITIONS = DevanagariNormalizer.NUKTA_DECOMPOSITIONS
 
     DEFAULT_NUMBER_LANG = "hi"
 
@@ -611,20 +613,11 @@ class HindiNormalizer(BaseNormalizer):
         text = text.replace("\u0972", "\u090f")
 
         # decomposing Nukta based composite characters
-        text = text.replace("\u0929", "\u0928" + HindiNormalizer.NUKTA)
-        text = text.replace("\u0931", "\u0930" + HindiNormalizer.NUKTA)
-        text = text.replace("\u0934", "\u0933" + HindiNormalizer.NUKTA)
-        text = text.replace("\u0958", "\u0915" + HindiNormalizer.NUKTA)
-        text = text.replace("\u0959", "\u0916" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095a", "\u0917" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095b", "\u091c" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095c", "\u0921" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095d", "\u0922" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095e", "\u092b" + HindiNormalizer.NUKTA)
-        text = text.replace("\u095f", "\u092f" + HindiNormalizer.NUKTA)
+        for composed, decomposed in self.NUKTA_DECOMPOSITIONS.items():
+            text = text.replace(composed, decomposed)
 
         if self.remove_nuktas:
-            text = text.replace(HindiNormalizer.NUKTA, "")
+            text = text.replace(self.NUKTA, "")
 
         # replace pipe character for poorna virama
         text = text.replace("\u007c", "\u0964")
