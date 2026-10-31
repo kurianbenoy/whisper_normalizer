@@ -18,7 +18,7 @@ from whisper_normalizer.indic import MalayalamNormalizer
 class LanguageCodes(str, Enum):
     ENGLISH = 'en'
     BASIC = 'basic'
-    DEVANAGARI = 'hi'
+    DEVANAGARI = 'devanagari'
     HINDI = 'hi'
     PUNJABI = 'pa'
     TELUGU = 'te'
@@ -172,6 +172,8 @@ def get_normalizer(language: LanguageCodes, options: Optional[dict] = None):
         else:
             validated_options = IndicNormalizerOptions(**options)
             return normalizer_class(**validated_options.model_dump())
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid options for {language.value} normalizer: {str(e)}")
     
