@@ -37,7 +37,6 @@ SCRIPT_RANGES = {
     "si": [0x0D80, 0x0DFF],
     "hi": [0x0900, 0x097F],
     "mr": [0x0900, 0x097F],
-    "kK": [0x0900, 0x097F],
     "sa": [0x0900, 0x097F],
     "ne": [0x0900, 0x097F],
     "sd": [0x0900, 0x097F],
@@ -54,7 +53,6 @@ DRAVIDIAN_LANGUAGES = [
 IE_LANGUAGES = [
     "hi",
     "mr",
-    "kK",
     "sa",
     "ne",
     "sd",
