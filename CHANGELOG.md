@@ -54,7 +54,7 @@ First stable 1.0 release. It adds a stable language-selection API, many more lan
 
 - The nine Indic normalizers with `tts_mode` now share one pipeline for currencies, decimals, URLs, e-mail addresses, symbols and digit spelling, with each language supplying only its spoken words. Output is unchanged apart from the fixes above; per-language differences such as Hindi reading fractions digit by digit and Punjabi keeping Latin letter case are preserved.
 - The English normalizers are checked against OpenAI Whisper's own normalizer test suite (67 assertions), so drift from upstream is caught by the notebook tests. The intentional divergences are pinned separately.
-- Release builds now produce an sdist as well as a wheel, and the release workflow fails unless the tag, package version and changelog entry agree.
+- Release artifacts now include an sdist as well as a wheel.
 
 ## 0.1.15 - 2026-07-26
 
