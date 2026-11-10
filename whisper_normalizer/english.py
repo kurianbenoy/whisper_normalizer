@@ -496,11 +496,127 @@ def _pluralize(word: str) -> str:
     return word[:-1] + "ies" if word.endswith("y") else word + "s"
 
 
-# Pronouns and wh-words after which "'s" is a contraction of "is".
+# Pronouns and wh-words after which "'s" is unambiguously "is".
 _IS_SUBJECTS = (
     r"he|she|it|that|this|there|here|what|who|where|when|why|how|which|"
     r"whatever|whoever|wherever|whenever|however|whichever"
 )
+
+# Indefinite pronouns where "'s" may be either "is" or a possessive.
+_INDEFINITE_SUBJECTS = (
+    r"someone|somebody|anyone|anybody|everyone|everybody|nobody|no one|"
+    r"something|anything|everything|nothing"
+)
+
+# Closed-class words that can start the predicate after "is".
+_DETERMINERS = frozenset(
+    "the a an this that these those my your his her its our their".split()
+)
+_PRONOUNS = frozenset(
+    "mine yours his hers ours theirs me him her us them you it".split()
+)
+_PREPOSITIONS = frozenset(
+    "at in on with from for to about under over above below behind beside "
+    "between among during by of into onto upon through across around "
+    "against without within near like as than since until till despite "
+    "except beyond toward towards along plus via per underneath beneath "
+    "alongside amid amidst throughout concerning regarding".split()
+)
+_ADVERBS = frozenset(
+    "here there now then today tomorrow yesterday tonight always never ever "
+    "still already yet soon later again too also just even well so very "
+    "really quite rather pretty almost probably maybe perhaps definitely "
+    "certainly absolutely actually finally recently currently away abroad "
+    "anywhere somewhere everywhere nowhere not no yes instead anyway however "
+    "therefore otherwise indeed".split()
+)
+# Adjectives that can follow "is". If one is followed by a noun, the "'s"
+# is possessive instead: "everyone's happy" vs "everyone's happy place".
+_ADJECTIVES = frozenset(
+    "after alive angry asleep awake back bad beautiful before best better big "
+    "boring brave broken busy careful certain clean clear clever close cold "
+    "cool crazy cute dangerous dark dead deaf dear different difficult dirty "
+    "down early easy empty enough excited famous far fast favourite favorite "
+    "fine finished first free fresh friendly full funny gone good great happy "
+    "hard healthy heavy high home honest hot hungry important impossible "
+    "inside interesting jealous kind large last late lazy light little lonely "
+    "long loud lost low lucky mad married mean messy modern narrow near neat "
+    "new next nice off old only open other out outside past own perfect poor "
+    "possible proud quick quiet ready real red rich right rude sad safe "
+    "scary serious short shy sick silly simple sleepy slow small smart soft "
+    "sorry special strange strong stupid sure sweet tall terrible thirsty "
+    "tight tiny tired true ugly unhappy up upstairs downstairs useful warm "
+    "weak weird welcome wet wide wild wise wonderful worried worse worst "
+    "wrong young".split()
+)
+# Noun forms ending in "-ing" or "-ed" that are not predicate forms.
+_ING_NOUNS = frozenset(
+    "bedding belongings beginning building ceiling clothing cooking darling "
+    "drawing dressing duckling earnings ending evening feeling filling "
+    "housing icing king lighting meeting morning opening painting pudding "
+    "reading ring savings shopping sibling spring string surroundings "
+    "thing something anything nothing everything topping training wedding "
+    "wing writing".split()
+)
+_ED_NOUNS = frozenset(
+    "bed breed creed deed feed greed hundred need seed shed shred sled "
+    "speed weed".split()
+)
+_FUNCTION_WORDS = (
+    _DETERMINERS
+    | _PRONOUNS
+    | _PREPOSITIONS
+    | _ADVERBS
+    | frozenset(
+        "and or but nor so yet for to than as that whether if because "
+        "after before past although though while when where why how what "
+        "which who whom whose "
+        "very too also just only even still already yet ever never always "
+        "sometimes often usually really quite rather pretty almost enough "
+        "more most less least such all both either neither some any each "
+        "every another other own same last next first second third".split()
+    )
+)
+_PREDICATE_WORDS = _DETERMINERS | _PRONOUNS | _PREPOSITIONS | _ADVERBS
+
+
+def _first_word(s: str) -> tuple[Optional[str], str]:
+    """Return the first word in `s` and the text after it."""
+    match = re.search(r"[a-z0-9']+", s)
+    if match is None:
+        return None, ""
+    return match.group(0), s[match.end() :]
+
+
+def _starts_predicate(word: str, after: str) -> bool:
+    """Whether `word` can start the predicate after an indefinite pronoun."""
+    if word in _PREDICATE_WORDS:
+        return True
+    if word in _ADJECTIVES:
+        next_word, _ = _first_word(after)
+        # "everyone's happy" is a predicate, "everyone's happy place" is not.
+        return next_word is None or next_word in _FUNCTION_WORDS
+    if word.endswith("ing"):
+        if word not in _ING_NOUNS:
+            return True
+        # "someone's building" is a noun, but "someone's building a house"
+        # uses the verb: a following determiner or pronoun signals the verb.
+        next_word, _ = _first_word(after)
+        return next_word in _DETERMINERS or next_word in _PRONOUNS
+    if word.endswith("ed") and word not in _ED_NOUNS:
+        next_word, _ = _first_word(after)
+        # "someone's tired" is a predicate, "someone's tired old dog" is not.
+        return next_word is None or next_word in _FUNCTION_WORDS
+    return False
+
+
+def _expand_indefinite_s(match: Match) -> str:
+    """Expand "'s" after an indefinite pronoun to "is" or a possessive."""
+    subject = match.group(1)
+    word, after = _first_word(match.string[match.end() :])
+    if word is not None and _starts_predicate(word, after):
+        return f"{subject} is"
+    return f"{subject}s"
 
 
 class EnglishTextNormalizer:
@@ -510,7 +626,7 @@ class EnglishTextNormalizer:
     2. Remove any phrases between matching parentheses ((, )).
     3. Remove any of the following words: hmm, mm, mhm, mmm, uh, um
     4. Remove whitespace characters that comes before an apostrophe ’
-    5. Convert standard or informal contracted forms of English into the original form; `'s` is "is" only after pronouns and wh-words, and is possessive elsewhere.
+    5. Convert standard or informal contracted forms of English into the original form; `'s` is "is" after personal pronouns and wh-words; after indefinite pronouns it is "is" only when the next word starts a predicate (`someone's here`), and possessive before a noun (`someone's car`).
     6. Remove commas (,) between digits
     7. Remove periods (.) not followed by numbers
     8. Remove symbols as well as diacritics from the text, where symbols are the characters with the Unicode category
@@ -595,9 +711,11 @@ class EnglishTextNormalizer:
             # general contractions
             r"n't\b": " not",
             r"'re\b": " are",
-            # "'s" is "is" only after pronouns and wh-words. Elsewhere it is
-            # possessive, so drop the apostrophe and keep the "s".
+            # "'s" is "is" after unambiguous pronouns and wh-words. After
+            # indefinite pronouns the next word decides: "someone's here" is
+            # "someone is here", but "someone's car" is possessive.
             rf"\b({_IS_SUBJECTS})'s\b": r"\1 is",
+            rf"\b({_INDEFINITE_SUBJECTS})'s\b": _expand_indefinite_s,
             r"(?<=\w)'s\b": "s",
             r"'d\b": " would",
             r"'ll\b": " will",
