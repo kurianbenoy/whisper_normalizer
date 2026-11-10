@@ -2,6 +2,20 @@
 
 <!-- do not remove -->
 
+## 1.0.1 - 2026-11-10
+
+This patch release fixes English apostrophe handling so possessive nouns are no longer read as "is".
+
+**Fixed**
+
+- English `'s` is now expanded to "is" only after pronouns and wh-words (`he's`, `she's`, `it's`, `that's`, `there's`, `here's`, `what's`, `who's`, `where's`, `when's`, `why's`, `how's`, `which's`, and their `-ever` forms). Elsewhere it is treated as a possessive: the apostrophe is dropped and the "s" is kept, so `"John's car"` becomes `"johns car"` and `"Wittgenstein's quote"` becomes `"wittgensteins quote"` instead of `"john is car"` and `"wittgenstein is quote"`.
+- English contractions written with a curly apostrophe (`’`) now normalize like straight ones, so `"it’s"` becomes "it is" and `"don’t"` becomes "do not" instead of being split into two words.
+- The existing contraction rules still run first, so `"she's been"` remains "she has been", `"let's"` remains "let us", and `"John's got"` becomes "john has got". Both default and `tts_mode` output use the new handling.
+
+**Migrating**
+
+- Re-run stored English baselines or WER references: possessive `'s` and curly-apostrophe contractions now normalize differently.
+
 ## 1.0.0 - 2026-10-31
 
 First stable 1.0 release. It adds a stable language-selection API, many more languages, ASR evaluation metrics, and fixes several normalization bugs.
