@@ -12,6 +12,10 @@ This patch release fixes English apostrophe handling so possessive nouns are no 
 - English contractions written with a curly apostrophe (`’`) now normalize like straight ones, so `"it’s"` becomes "it is" and `"don’t"` becomes "do not" instead of being split into two words.
 - The existing contraction rules still run first, so `"she's been"` remains "she has been", `"let's"` remains "let us", and `"John's got"` becomes "john has got". Both default and `tts_mode` output use the new handling.
 
+**Docs**
+
+- The README and documentation now include a Citation section.
+
 **Migrating**
 
 - Re-run stored English baselines or WER references: possessive `'s` and curly-apostrophe contractions now normalize differently.

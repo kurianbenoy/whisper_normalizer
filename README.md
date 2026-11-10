@@ -16,6 +16,10 @@
 
 This package is a python implementation of the text standardisation/normalization approach which is being used in OpenAI whisper. The code was originally being released as open-source in [Whisper source code](https://github.com/openai/whisper). More details about the text normalization approach used by whisper can be found on Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale Weak Supervision](https://cdn.openai.com/papers/whisper.pdf) by OpenAI team.
 
+## Citation
+
+If you use `whisper_normalizer` in your work and would like to cite it, please thank **Kurian Benoy** and link to this GitHub repository: [github.com/kurianbenoy/whisper_normalizer](https://github.com/kurianbenoy/whisper_normalizer).
+
 ## Installation of package
 
 ``` sh
