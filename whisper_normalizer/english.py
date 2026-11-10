@@ -496,6 +496,13 @@ def _pluralize(word: str) -> str:
     return word[:-1] + "ies" if word.endswith("y") else word + "s"
 
 
+# Pronouns and wh-words after which "'s" is a contraction of "is".
+_IS_SUBJECTS = (
+    r"he|she|it|that|this|there|here|what|who|where|when|why|how|which|"
+    r"whatever|whoever|wherever|whenever|however|whichever"
+)
+
+
 class EnglishTextNormalizer:
     """Applies all the rules for normalizing English text as mentioned in OpenAI whisper paper. As per the text normalization/standardization approach  Appendix Section C pp.21 the paper [Robust Speech Recognition via Large-Scale  Weak Supervision](https://cdn.openai.com/papers/whisper.pdf). The `EnglishTextNormalizer` does the following functionality:
 
@@ -503,7 +510,7 @@ class EnglishTextNormalizer:
     2. Remove any phrases between matching parentheses ((, )).
     3. Remove any of the following words: hmm, mm, mhm, mmm, uh, um
     4. Remove whitespace characters that comes before an apostrophe ’
-    5. Convert standard or informal contracted forms of English into the original form.
+    5. Convert standard or informal contracted forms of English into the original form; `'s` is "is" only after pronouns and wh-words, and is possessive elsewhere.
     6. Remove commas (,) between digits
     7. Remove periods (.) not followed by numbers
     8. Remove symbols as well as diacritics from the text, where symbols are the characters with the Unicode category
@@ -588,7 +595,10 @@ class EnglishTextNormalizer:
             # general contractions
             r"n't\b": " not",
             r"'re\b": " are",
-            r"'s\b": " is",
+            # "'s" is "is" only after pronouns and wh-words. Elsewhere it is
+            # possessive, so drop the apostrophe and keep the "s".
+            rf"\b({_IS_SUBJECTS})'s\b": r"\1 is",
+            r"(?<=\w)'s\b": "s",
             r"'d\b": " would",
             r"'ll\b": " will",
             r"'t\b": " not",
@@ -679,6 +689,7 @@ class EnglishTextNormalizer:
 
     def __call__(self, s: str):
         s = s.lower()
+        s = s.replace("’", "'")  # curly apostrophes are contractions too
 
         s = re.sub(r"[<\[][^>\]]*[>\]]", "", s)  # remove words between brackets
         s = re.sub(r"\(([^)]+?)\)", "", s)  # remove words between parenthesis
